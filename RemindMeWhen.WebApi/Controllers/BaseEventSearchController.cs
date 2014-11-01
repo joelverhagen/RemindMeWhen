@@ -23,6 +23,7 @@ namespace Knapcode.RemindMeWhen.WebApi.Controllers
         {
             Page<T> page = await _repository.EventSearchAsync(query, pageLimit, pageNumber);
 
+            Uri previous = pageNumber > 1 ? GetUrl(query, pageLimit, pageNumber - 1) : null;
             Uri self = GetUrl(query, pageLimit, pageNumber);
             Uri next = page.HasNextPage ? GetUrl(query, pageLimit, pageNumber + 1) : null;
 
@@ -32,6 +33,7 @@ namespace Knapcode.RemindMeWhen.WebApi.Controllers
                 Entries = page.Entries,
                 Links = new PageLinks
                 {
+                    Previous = previous,
                     Self = self,
                     Next = next
                 }

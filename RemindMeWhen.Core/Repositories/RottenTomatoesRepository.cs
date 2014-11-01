@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using Knapcode.RemindMeWhen.Core.Clients.RottenTomatoes;
@@ -54,10 +55,12 @@ namespace Knapcode.RemindMeWhen.Core.Repositories
                 throw new ArgumentException(message, "eventType");
             }
 
+            // query Rotten Tomatoes API
             MovieCollection movieCollection = await _client.SearchMoviesAsync(query, pageLimit, pageNumber);
 
+            // mutate the result
             var movieReleases = new List<T>();
-
+            bool hasNextPage = false;
             if (movieCollection != null && movieCollection.Movies != null)
             {
                 foreach (Movie movie in movieCollection.Movies)
@@ -75,15 +78,17 @@ namespace Knapcode.RemindMeWhen.Core.Repositories
 
                     movieReleases.Add(GetMovieReleaseEvent<T>(movie, eventType, eventDate.Value));
                 }
+
+                hasNextPage = movieCollection.Movies.Count() >= pageLimit;
             }
 
-            // return the page
             return new Page<T>
             {
-                Entries = movieReleases,
                 PageLimit = pageLimit,
                 PageNumber = pageNumber,
-                HasNextPage = movieCollection.Movies.Count() >= pageLimit
+
+                Entries = movieReleases,
+                HasNextPage = hasNextPage
             };
         }
 
@@ -124,12 +129,15 @@ namespace Knapcode.RemindMeWhen.Core.Repositories
             var e = Activator.CreateInstance<T>();
             e.Identity = new EventIdentity(eventType, Source, movie.Id);
             e.DateTime = date;
-            e.ImdbUrl = imdbUrl;
-            e.Title = movie.Title;
-            e.RottenTomatoesUrl = rottenTomatoesUrl;
-            e.ReleasedYear = movie.Year;
-            e.Actors = actors;
-            e.ImageUrl = imageUrl;
+            e.Content = new MovieReleasedEventContent
+            {
+                ImdbUrl = imdbUrl,
+                Title = movie.Title,
+                RottenTomatoesUrl = rottenTomatoesUrl,
+                ReleasedYear = movie.Year,
+                Actors = actors,
+                ImageUrl = imageUrl
+            };
 
             return e;
         }

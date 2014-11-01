@@ -1,6 +1,5 @@
 ﻿using System.Net.Http.Formatting;
 using System.Web.Http;
-using System.Web.SessionState;
 using Knapcode.StandardSerializer;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
@@ -15,8 +14,8 @@ namespace Knapcode.RemindMeWhen.WebApi
             configuration.Formatters.Add(GetJsonMediaTypeFormatter());
 
             configuration.MapHttpAttributeRoutes();
-            configuration.Routes.MapHttpRoute("MovieReleasedToHomeEvents_GetEvents", "events/movie-released-to-home", new { controller = "MovieReleasedToHomeEvents", action = "GetEvents" });
-            configuration.Routes.MapHttpRoute("MovieReleasedToTheaterEvents_GetEvents", "events/movie-released-to-theater", new { controller = "MovieReleasedToTheaterEvents", action = "GetEvents" });
+            configuration.Routes.MapHttpRoute("MovieReleasedToHomeEvents_GetEvents", "events/movie-released-to-home", new {controller = "MovieReleasedToHomeEvents", action = "GetEvents"});
+            configuration.Routes.MapHttpRoute("MovieReleasedToTheaterEvents_GetEvents", "events/movie-released-to-theater", new {controller = "MovieReleasedToTheaterEvents", action = "GetEvents"});
         }
 
         private static JsonMediaTypeFormatter GetJsonMediaTypeFormatter()
