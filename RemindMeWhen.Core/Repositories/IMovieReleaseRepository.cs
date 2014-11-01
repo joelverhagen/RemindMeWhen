@@ -5,6 +5,6 @@ namespace Knapcode.RemindMeWhen.Core.Repositories
 {
     public interface IMovieReleaseRepository
     {
-        Task<Page<MovieReleaseEvent>> GetMovieReleasesPage(string query, int pageLimit, int pageNumber);
+        Task<Page<MovieRelease>> GetMovieReleasesPage(string query, int pageLimit, int pageNumber);
     }
 }

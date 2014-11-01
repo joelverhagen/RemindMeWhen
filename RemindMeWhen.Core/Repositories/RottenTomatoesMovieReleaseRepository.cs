@@ -17,7 +17,7 @@ namespace Knapcode.RemindMeWhen.Core.Repositories
             _client = client;
         }
 
-        public async Task<Page<MovieReleaseEvent>> GetMovieReleasesPage(string query, int pageLimit, int pageNumber)
+        public async Task<Page<MovieRelease>> GetMovieReleasesPage(string query, int pageLimit, int pageNumber)
         {
             // cut the page limit in half because each Rotten Tomatoes movie can have two release dates (theater and home)
             pageLimit /= 2;
@@ -26,7 +26,7 @@ namespace Knapcode.RemindMeWhen.Core.Repositories
             MovieCollection movieCollection = await _client.SearchMoviesAsync(query, pageLimit, pageNumber);
 
             // extract theater and home releases
-            var movieReleases = new List<MovieReleaseEvent>();
+            var movieReleases = new List<MovieRelease>();
             foreach (Movie movie in movieCollection.Movies)
             {
                 if (movie.ReleaseDates == null)
@@ -46,7 +46,7 @@ namespace Knapcode.RemindMeWhen.Core.Repositories
             }
 
             // return the page
-            return new Page<MovieReleaseEvent>
+            return new Page<MovieRelease>
             {
                 Entries = movieReleases,
                 PageLimit = pageLimit,
@@ -55,7 +55,7 @@ namespace Knapcode.RemindMeWhen.Core.Repositories
             };
         }
 
-        private static MovieReleaseEvent GetMovieRelease(Movie movie, MovieReleaseType type, DateTime date)
+        private static MovieRelease GetMovieRelease(Movie movie, MovieReleaseType type, DateTime date)
         {
             // get the IMDB URL
             Uri imdbUrl = null;
@@ -91,7 +91,7 @@ namespace Knapcode.RemindMeWhen.Core.Repositories
                 imageUrl = null;
             }
 
-            return new MovieReleaseEvent(type)
+            return new MovieRelease(type)
             {
                 Date = date,
                 ImdbUrl = imdbUrl,

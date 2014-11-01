@@ -18,14 +18,14 @@ namespace Knapcode.RemindMeWhen.WebApi.Controllers
             _repository = repository;
         }
 
-        public async Task<PageViewModel<MovieReleaseEvent>> Get(string id, int pageLimit = 10, int pageNumber = 1)
+        public async Task<PageViewModel<MovieRelease>> Get(string id, int pageLimit = 10, int pageNumber = 1)
         {
-            Page<MovieReleaseEvent> page = await _repository.GetMovieReleasesPage(id, pageLimit, pageNumber);
+            Page<MovieRelease> page = await _repository.GetMovieReleasesPage(id, pageLimit, pageNumber);
 
             string self = Url.Link("DefaultApi", new {controller = "MovieReleases", id, pageLimit, pageNumber});
             string next = page.HasNextPage ? Url.Link("DefaultApi", new { controller = "MovieReleases", id, pageLimit, pageNumber = pageNumber + 1 }) : null;
 
-            return new PageViewModel<MovieReleaseEvent>
+            return new PageViewModel<MovieRelease>
             {
                 Count = page.Entries.Count(),
                 Entries = page.Entries,

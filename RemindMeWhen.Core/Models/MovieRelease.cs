@@ -3,9 +3,9 @@ using System.Collections.Generic;
 
 namespace Knapcode.RemindMeWhen.Core.Models
 {
-    public class MovieReleaseEvent
+    public class MovieRelease
     {
-        public MovieReleaseEvent(MovieReleaseType type)
+        public MovieRelease(MovieReleaseType type)
         {
             Type = type;
         }
