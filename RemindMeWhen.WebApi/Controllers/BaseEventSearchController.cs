@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Specialized;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
@@ -44,7 +45,14 @@ namespace Knapcode.RemindMeWhen.WebApi.Controllers
         {
             var builder = new UriBuilder(Request.RequestUri);
 
-            var queryString = HttpUtility.ParseQueryString(string.Empty);
+            // exclude the port if it is the same as the default for that scheme
+            if ((builder.Scheme.Equals("http", StringComparison.OrdinalIgnoreCase) && builder.Port == 80) &&
+                builder.Scheme.Equals("https", StringComparison.OrdinalIgnoreCase) && builder.Port == 443)
+            {
+                builder.Port = -1;
+            }
+
+            NameValueCollection queryString = HttpUtility.ParseQueryString(string.Empty);
             queryString["query"] = query;
             queryString["pageLimit"] = pageLimit.ToString(CultureInfo.InvariantCulture);
             queryString["pageNumber"] = pageNumber.ToString(CultureInfo.InvariantCulture);
