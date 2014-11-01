@@ -15,7 +15,8 @@ namespace Knapcode.RemindMeWhen.WebApi
             configuration.Formatters.Add(GetJsonMediaTypeFormatter());
 
             configuration.MapHttpAttributeRoutes();
-            configuration.Routes.MapHttpRoute("DefaultApi", "{controller}/{id}", new {id = RouteParameter.Optional});
+            configuration.Routes.MapHttpRoute("MovieReleasedToHomeEvents_GetEvents", "events/movie-released-to-home", new { controller = "MovieReleasedToHomeEvents", action = "GetEvents" });
+            configuration.Routes.MapHttpRoute("MovieReleasedToTheaterEvents_GetEvents", "events/movie-released-to-theater", new { controller = "MovieReleasedToTheaterEvents", action = "GetEvents" });
         }
 
         private static JsonMediaTypeFormatter GetJsonMediaTypeFormatter()

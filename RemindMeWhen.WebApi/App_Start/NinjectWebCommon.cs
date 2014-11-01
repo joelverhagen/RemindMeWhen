@@ -2,6 +2,7 @@ using System;
 using System.Configuration;
 using System.Web;
 using Knapcode.RemindMeWhen.Core.Clients.RottenTomatoes;
+using Knapcode.RemindMeWhen.Core.Models;
 using Knapcode.RemindMeWhen.Core.Repositories;
 using Knapcode.RemindMeWhen.WebApi;
 using Microsoft.Web.Infrastructure.DynamicModuleHelper;
@@ -68,7 +69,8 @@ namespace Knapcode.RemindMeWhen.WebApi
             string key = ConfigurationManager.AppSettings.Get(appSettingsKey);
 
             kernel.Bind<IRottenTomatoesClient>().To<RottenTomatoesClient>();
-            kernel.Bind<IMovieReleaseRepository>().To<RottenTomatoesMovieReleaseRepository>();
+            kernel.Bind<IEventSearchRepository<MovieReleasedToTheaterEvent>>().To<RottenTomatoesRepository>();
+            kernel.Bind<IEventSearchRepository<MovieReleasedToHomeEvent>>().To<RottenTomatoesRepository>();
             kernel.Bind<RottenTomatoesClientSettings>().ToConstant(new RottenTomatoesClientSettings {Key = key});
         }
     }

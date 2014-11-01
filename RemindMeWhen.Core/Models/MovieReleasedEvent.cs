@@ -3,20 +3,16 @@ using System.Collections.Generic;
 
 namespace Knapcode.RemindMeWhen.Core.Models
 {
-    public class MovieRelease
+    public abstract class MovieReleasedEvent : IEvent
     {
-        public MovieRelease(MovieReleaseType type)
-        {
-            Type = type;
-        }
+        public EventIdentity Identity { get; set; }
+        public DateTime? DateTime { get; set; }
 
         public string Title { get; set; }
-        public int? Year { get; set; }
+        public int? ReleasedYear { get; set; }
         public Uri ImdbUrl { get; set; }
         public Uri RottenTomatoesUrl { get; set; }
         public Uri ImageUrl { get; set; }
-        public DateTime Date { get; set; }
-        public MovieReleaseType Type { get; private set; }
         public IEnumerable<string> Actors { get; set; }
     }
 }

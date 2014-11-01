@@ -4,7 +4,7 @@ namespace Knapcode.RemindMeWhen.WebApi.Models
 {
     public class PageLinks
     {
-        public string Self { get; set; }
-        public string Next { get; set; }
+        public Uri Self { get; set; }
+        public Uri Next { get; set; }
     }
 }

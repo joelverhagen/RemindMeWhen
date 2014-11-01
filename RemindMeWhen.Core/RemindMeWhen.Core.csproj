@@ -64,13 +64,17 @@
     <Compile Include="Clients\RottenTomatoes\Models\ReleaseDates.cs" />
     <Compile Include="Clients\RottenTomatoes\RottenTomatoesClient.cs" />
     <Compile Include="Clients\RottenTomatoes\RottenTomatoesClientSettings.cs" />
+    <Compile Include="Models\EventIdentity.cs" />
+    <Compile Include="Models\EventType.cs" />
+    <Compile Include="Models\IEvent.cs" />
+    <Compile Include="Models\MovieReleasedToHomeEvent.cs" />
+    <Compile Include="Models\MovieReleasedToTheaterEvent.cs" />
     <Compile Include="Models\Page.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RateLimit.cs" />
-    <Compile Include="Models\MovieRelease.cs" />
-    <Compile Include="Models\MovieReleaseType.cs" />
-    <Compile Include="Repositories\IMovieReleaseRepository.cs" />
-    <Compile Include="Repositories\RottenTomatoesMovieReleaseRepository.cs" />
+    <Compile Include="Models\MovieReleasedEvent.cs" />
+    <Compile Include="Repositories\IEventRepository.cs" />
+    <Compile Include="Repositories\RottenTomatoesRepository.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
