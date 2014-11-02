@@ -1,5 +1,6 @@
 ﻿using System.Net.Http.Formatting;
 using System.Web.Http;
+using Knapcode.RemindMeWhen.WebApi.Formatters;
 using Knapcode.StandardSerializer;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
@@ -34,7 +35,7 @@ namespace Knapcode.RemindMeWhen.WebApi
 
             serializerSettings.Converters.Add(new StringEnumConverter());
 
-            return new JsonMediaTypeFormatter
+            return new JsonpMediaTypeFormatter
             {
                 UseDataContractJsonSerializer = false,
                 SerializerSettings = serializerSettings

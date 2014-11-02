@@ -108,6 +108,7 @@
     <Compile Include="Controllers\BaseEventSearchController.cs" />
     <Compile Include="Controllers\MovieReleasedToTheaterEventsController.cs" />
     <Compile Include="Controllers\MovieReleasedToHomeEventsController.cs" />
+    <Compile Include="Formatters\JsonpMediaTypeFormatter.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
