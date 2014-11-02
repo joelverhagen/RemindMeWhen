@@ -1,4 +1,4 @@
-﻿namespace RemindMeWhen.Website.Models
+﻿namespace Knapcode.RemindMeWhen.Website.Models
 {
     public class SearchViewModel
     {

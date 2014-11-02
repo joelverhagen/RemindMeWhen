@@ -1,6 +1,6 @@
 ﻿using System.Web.Optimization;
 
-namespace RemindMeWhen.Website
+namespace Knapcode.RemindMeWhen.Website
 {
     public class BundleConfig
     {

@@ -5,7 +5,7 @@ using System.Web;
 using System.Web.Mvc;
 using System.Web.Routing;
 
-namespace RemindMeWhen.Website
+namespace Knapcode.RemindMeWhen.Website
 {
     public class RouteConfig
     {

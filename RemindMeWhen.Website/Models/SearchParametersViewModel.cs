@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Knapcode.RemindMeWhen.Core.Models;
 
-namespace RemindMeWhen.Website.Models
+namespace Knapcode.RemindMeWhen.Website.Models
 {
     public class SearchParametersViewModel
     {

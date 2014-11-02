@@ -5,9 +5,9 @@ using System.Threading.Tasks;
 using System.Web.Mvc;
 using Knapcode.RemindMeWhen.Core.Models;
 using Knapcode.RemindMeWhen.Core.Repositories;
-using RemindMeWhen.Website.Models;
+using Knapcode.RemindMeWhen.Website.Models;
 
-namespace RemindMeWhen.Website.Controllers
+namespace Knapcode.RemindMeWhen.Website.Controllers
 {
     public class HomeController : Controller
     {

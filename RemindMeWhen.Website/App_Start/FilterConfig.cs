@@ -1,6 +1,6 @@
 ﻿using System.Web.Mvc;
 
-namespace RemindMeWhen.Website
+namespace Knapcode.RemindMeWhen.Website
 {
     public class FilterConfig
     {
