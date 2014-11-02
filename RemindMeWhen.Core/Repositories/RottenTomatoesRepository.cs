@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using Knapcode.RemindMeWhen.Core.Clients.RottenTomatoes;
@@ -70,13 +69,13 @@ namespace Knapcode.RemindMeWhen.Core.Repositories
                         continue;
                     }
 
-                    DateTime? eventDate = getDate(movie.ReleaseDates);
-                    if (!eventDate.HasValue)
+                    if (!movie.ReleaseDates.Theater.HasValue && !movie.ReleaseDates.Dvd.HasValue)
                     {
                         continue;
                     }
 
-                    movieReleases.Add(GetMovieReleaseEvent<T>(movie, eventType, eventDate.Value));
+                    DateTime? date = getDate(movie.ReleaseDates);
+                    movieReleases.Add(GetMovieReleaseEvent<T>(movie, eventType, date));
                 }
 
                 hasNextPage = movieCollection.Movies.Count() >= pageLimit;
@@ -86,13 +85,12 @@ namespace Knapcode.RemindMeWhen.Core.Repositories
             {
                 PageLimit = pageLimit,
                 PageNumber = pageNumber,
-
                 Entries = movieReleases,
                 HasNextPage = hasNextPage
             };
         }
 
-        private static T GetMovieReleaseEvent<T>(Movie movie, EventType eventType, DateTime date) where T : MovieReleasedEvent
+        private static T GetMovieReleaseEvent<T>(Movie movie, EventType eventType, DateTime? date) where T : MovieReleasedEvent
         {
             // get the IMDB URL
             Uri imdbUrl = null;
