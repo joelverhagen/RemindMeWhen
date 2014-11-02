@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RemindMeWhen.Core", "Remind
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RemindMeWhen.Website", "RemindMeWhen.Website\RemindMeWhen.Website.csproj", "{D7EA5C98-41E1-4284-A144-4157A85C3CA2}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RemindMeWhen.Web", "RemindMeWhen.Web\RemindMeWhen.Web.csproj", "{34A2742E-2C4A-4982-8F78-09B7ABF6F53B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{D7EA5C98-41E1-4284-A144-4157A85C3CA2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D7EA5C98-41E1-4284-A144-4157A85C3CA2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D7EA5C98-41E1-4284-A144-4157A85C3CA2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{34A2742E-2C4A-4982-8F78-09B7ABF6F53B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{34A2742E-2C4A-4982-8F78-09B7ABF6F53B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{34A2742E-2C4A-4982-8F78-09B7ABF6F53B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{34A2742E-2C4A-4982-8F78-09B7ABF6F53B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

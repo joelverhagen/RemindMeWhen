@@ -103,7 +103,6 @@
     <Folder Include="App_Data\" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="App_Start\NinjectWebCommon.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\BaseEventSearchController.cs" />
     <Compile Include="Controllers\MovieReleasedToTheaterEventsController.cs" />
@@ -130,6 +129,10 @@
     <ProjectReference Include="..\RemindMeWhen.Core\RemindMeWhen.Core.csproj">
       <Project>{05d3add2-518f-4aa4-90f5-c4bfc867a151}</Project>
       <Name>RemindMeWhen.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\RemindMeWhen.Web\RemindMeWhen.Web.csproj">
+      <Project>{34a2742e-2c4a-4982-8f78-09b7abf6f53b}</Project>
+      <Name>RemindMeWhen.Web</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

@@ -4,16 +4,16 @@ using System.Web;
 using Knapcode.RemindMeWhen.Core.Clients.RottenTomatoes;
 using Knapcode.RemindMeWhen.Core.Models;
 using Knapcode.RemindMeWhen.Core.Repositories;
+using Knapcode.RemindMeWhen.Web;
 using Microsoft.Web.Infrastructure.DynamicModuleHelper;
 using Ninject;
 using Ninject.Web.Common;
-using RemindMeWhen.Website;
 using WebActivatorEx;
 
 [assembly: WebActivatorEx.PreApplicationStartMethod(typeof (NinjectWebCommon), "Start")]
 [assembly: ApplicationShutdownMethod(typeof (NinjectWebCommon), "Stop")]
 
-namespace RemindMeWhen.Website
+namespace Knapcode.RemindMeWhen.Web
 {
     public static class NinjectWebCommon
     {
