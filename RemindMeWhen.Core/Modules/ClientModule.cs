@@ -13,6 +13,7 @@ namespace Knapcode.RemindMeWhen.Core.Modules
 
             Bind<RottenTomatoesClientSettings>().ToConstant(settings.RottenTomatoesClientSettings).WhenInjectedInto<RottenTomatoesClient>();
             Bind<IRottenTomatoesClient>().To<RottenTomatoesClient>();
+            Bind<IRottenTomatoesDeserializer>().To<RottenTomatoesDeserializer>();
         }
     }
 }

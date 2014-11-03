@@ -3,45 +3,26 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Globalization;
 using System.Net.Http;
-using System.Net.Http.Formatting;
-using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using System.Web;
 using Knapcode.RemindMeWhen.Core.Clients.RottenTomatoes.Models;
 using Knapcode.RemindMeWhen.Core.Settings;
-using Knapcode.StandardSerializer;
-using Newtonsoft.Json;
 
 namespace Knapcode.RemindMeWhen.Core.Clients.RottenTomatoes
 {
     public class RottenTomatoesClient : IRottenTomatoesClient
     {
-        private static readonly List<MediaTypeFormatter> MediaTypeFormatters = new List<MediaTypeFormatter>();
-
+        private readonly IRottenTomatoesDeserializer _deserializer;
         private readonly HttpClient _httpClient;
         private readonly string _key;
 
-        static RottenTomatoesClient()
+        public RottenTomatoesClient(IRottenTomatoesDeserializer deserializer, RottenTomatoesClientSettings settings)
         {
-            var resolver = new StandardContractResolver
+            if (deserializer == null)
             {
-                WordSplitOptions = WordSplitOptions.SplitCamelCase,
-                CapitalizationOptions = CapitalizationOptions.AllLowercase,
-                WordDelimiter = "_"
-            };
+                throw new ArgumentNullException("deserializer");
+            }
 
-            var jsonFormatter = new JsonMediaTypeFormatter
-            {
-                SerializerSettings = new JsonSerializerSettings {ContractResolver = resolver},
-                UseDataContractJsonSerializer = false
-            };
-            jsonFormatter.SupportedMediaTypes.Add(new MediaTypeHeaderValue("text/javascript"));
-
-            MediaTypeFormatters.Add(jsonFormatter);
-        }
-
-        public RottenTomatoesClient(RottenTomatoesClientSettings settings)
-        {
             if (settings == null)
             {
                 throw new ArgumentNullException("settings");
@@ -52,6 +33,7 @@ namespace Knapcode.RemindMeWhen.Core.Clients.RottenTomatoes
                 throw new ArgumentException("The Rotten Tomatoes API key cannot be null.", "settings");
             }
 
+            _deserializer = deserializer;
             _key = settings.Key;
             _httpClient = new HttpClient
             {
@@ -71,8 +53,8 @@ namespace Knapcode.RemindMeWhen.Core.Clients.RottenTomatoes
             string requestUri = GetRequestUri("movies.json", parameters);
 
             HttpResponseMessage response = await _httpClient.GetAsync(requestUri);
-
-            return await response.Content.ReadAsAsync<MovieCollection>(MediaTypeFormatters);
+            byte[] buffer = await response.Content.ReadAsByteArrayAsync();
+            return _deserializer.DeserializeMovieCollection(buffer);
         }
 
         private string GetRequestUri(string path, IEnumerable<KeyValuePair<string, string>> parameters)

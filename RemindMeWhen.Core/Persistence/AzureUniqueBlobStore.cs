@@ -52,12 +52,13 @@ namespace Knapcode.RemindMeWhen.Core.Persistence
             {
                 PartitionKey = key,
                 RowKey = key,
-                Hash = hash
+                Hash = hash,
+                IsCompressed = false
             };
             TableOperation operation = TableOperation.InsertOrReplace(hashTableEntity);
             await _table.ExecuteAsync(operation);
 
-            // persis the blob if it doesn't exist yet
+            // persist the blob if it doesn't exist yet
             string blobKey = hash.ToString();
             ICloudBlob blob = await _blobContainer.GetBlobReferenceFromServerAsync(blobKey);
             if (await blob.ExistsAsync())
@@ -71,6 +72,7 @@ namespace Knapcode.RemindMeWhen.Core.Persistence
         private class HashTableEntity : TableEntity
         {
             public Hash Hash { get; set; }
+            public bool IsCompressed { get; set; }
         }
     }
 }

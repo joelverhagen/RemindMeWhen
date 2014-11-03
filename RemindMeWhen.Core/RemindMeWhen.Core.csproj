@@ -78,6 +78,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Clients\IDeserializer.cs" />
+    <Compile Include="Clients\JsonDeserializer.cs" />
+    <Compile Include="Clients\RottenTomatoes\IRottenTomatoesDeserializer.cs" />
+    <Compile Include="Clients\RottenTomatoes\RottenTomatoesDeserializer.cs" />
     <Compile Include="Modules\ClientModule.cs" />
     <Compile Include="Modules\AzureUniqueBlobStoreModule.cs" />
     <Compile Include="Persistence\Hash.cs" />
