@@ -1,9 +1,7 @@
 using System;
 using System.Configuration;
 using System.Web;
-using Knapcode.RemindMeWhen.Core.Clients.RottenTomatoes;
-using Knapcode.RemindMeWhen.Core.Models;
-using Knapcode.RemindMeWhen.Core.Repositories;
+using Knapcode.RemindMeWhen.Core.Settings;
 using Knapcode.RemindMeWhen.Web;
 using Microsoft.Web.Infrastructure.DynamicModuleHelper;
 using Ninject;
@@ -65,13 +63,25 @@ namespace Knapcode.RemindMeWhen.Web
         /// <param name="kernel">The kernel.</param>
         private static void RegisterServices(IKernel kernel)
         {
-            string appSettingsKey = typeof (RottenTomatoesClientSettings).FullName + ".Key";
-            string key = ConfigurationManager.AppSettings.Get(appSettingsKey);
+            string rottenTomatoesAppSettingsKey = typeof (RottenTomatoesClientSettings).FullName + ".Key";
+            string rottenTomatoesKey = ConfigurationManager.AppSettings.Get(rottenTomatoesAppSettingsKey);
 
-            kernel.Bind<IRottenTomatoesClient>().To<RottenTomatoesClient>();
-            kernel.Bind<IEventSearchRepository<MovieReleasedToTheaterEvent>>().To<RottenTomatoesRepository>();
-            kernel.Bind<IEventSearchRepository<MovieReleasedToHomeEvent>>().To<RottenTomatoesRepository>();
-            kernel.Bind<RottenTomatoesClientSettings>().ToConstant(new RottenTomatoesClientSettings {Key = key});
+            var settings = new RemindMeWhenSettings
+            {
+                AzureStorageSettings = new AzureStorageSettings
+                {
+                    ConnectionString = "UseDevelopmentStorage=true;",
+                    ExternalDocumentBlobContainerName = "externaldocument",
+                    ExternalDocumentHashTableName = "externaldocumenthash"
+                },
+                RottenTomatoesClientSettings = new RottenTomatoesClientSettings
+                {
+                    Key = rottenTomatoesKey
+                }
+            };
+
+            kernel.Bind<RemindMeWhenSettings>().ToConstant(settings);
+            kernel.Load(typeof (RemindMeWhenSettings).Assembly);
         }
     }
 }

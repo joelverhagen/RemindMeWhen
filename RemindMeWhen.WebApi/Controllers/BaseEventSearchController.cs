@@ -22,7 +22,7 @@ namespace Knapcode.RemindMeWhen.WebApi.Controllers
 
         public async Task<PageViewModel<T>> GetEvents(string query, int pageLimit = 10, int pageNumber = 1)
         {
-            Page<T> page = await _repository.EventSearchAsync(query, pageLimit, pageNumber);
+            Page<T> page = await _repository.SearchEventsAsync(query, pageLimit, pageNumber);
 
             Uri previous = pageNumber > 1 ? GetUrl(query, pageLimit, pageNumber - 1) : null;
             Uri self = GetUrl(query, pageLimit, pageNumber);

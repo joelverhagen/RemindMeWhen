@@ -49,10 +49,10 @@ namespace Knapcode.RemindMeWhen.Website.Controllers
             switch (type)
             {
                 case EventType.MovieReleasedToTheater:
-                    events = (await _releasedToTheaterRepository.EventSearchAsync(query, 50, 1)).Entries;
+                    events = (await _releasedToTheaterRepository.SearchEventsAsync(query, 50, 1)).Entries;
                     break;
                 case EventType.MovieReleasedToHome:
-                    events = (await _releasedToHomeRepository.EventSearchAsync(query, 50, 1)).Entries;
+                    events = (await _releasedToHomeRepository.SearchEventsAsync(query, 50, 1)).Entries;
                     break;
                 default:
                     events = Enumerable.Empty<MovieReleasedEvent>();

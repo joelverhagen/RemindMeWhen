@@ -8,6 +8,7 @@ using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using System.Web;
 using Knapcode.RemindMeWhen.Core.Clients.RottenTomatoes.Models;
+using Knapcode.RemindMeWhen.Core.Settings;
 using Knapcode.StandardSerializer;
 using Newtonsoft.Json;
 
@@ -17,7 +18,7 @@ namespace Knapcode.RemindMeWhen.Core.Clients.RottenTomatoes
     {
         private static readonly List<MediaTypeFormatter> MediaTypeFormatters = new List<MediaTypeFormatter>();
 
-        private readonly HttpClient _client;
+        private readonly HttpClient _httpClient;
         private readonly string _key;
 
         static RottenTomatoesClient()
@@ -41,13 +42,21 @@ namespace Knapcode.RemindMeWhen.Core.Clients.RottenTomatoes
 
         public RottenTomatoesClient(RottenTomatoesClientSettings settings)
         {
+            if (settings == null)
+            {
+                throw new ArgumentNullException("settings");
+            }
+
             if (string.IsNullOrWhiteSpace(settings.Key))
             {
                 throw new ArgumentException("The Rotten Tomatoes API key cannot be null.", "settings");
             }
 
             _key = settings.Key;
-            _client = new HttpClient {BaseAddress = new Uri("http://api.rottentomatoes.com/api/public/v1.0/")};
+            _httpClient = new HttpClient
+            {
+                BaseAddress = new Uri("http://api.rottentomatoes.com/api/public/v1.0/")
+            };
         }
 
         public async Task<MovieCollection> SearchMoviesAsync(string query, int pageLimit = 30, int page = 1)
@@ -61,7 +70,7 @@ namespace Knapcode.RemindMeWhen.Core.Clients.RottenTomatoes
 
             string requestUri = GetRequestUri("movies.json", parameters);
 
-            HttpResponseMessage response = await _client.GetAsync(requestUri);
+            HttpResponseMessage response = await _httpClient.GetAsync(requestUri);
 
             return await response.Content.ReadAsAsync<MovieCollection>(MediaTypeFormatters);
         }

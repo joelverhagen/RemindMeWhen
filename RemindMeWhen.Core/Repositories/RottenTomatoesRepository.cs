@@ -8,7 +8,7 @@ using Knapcode.RemindMeWhen.Core.Models;
 
 namespace Knapcode.RemindMeWhen.Core.Repositories
 {
-    public class RottenTomatoesRepository : IEventSearchRepository<MovieReleasedToTheaterEvent>, IEventSearchRepository<MovieReleasedToHomeEvent>
+    public class RottenTomatoesRepository : IEventSearchRepository<MovieReleasedToTheaterEvent>, IEventSearchRepository<MovieReleasedToHomeEvent>, IRottenTomatoesRepository
     {
         private const string Source = "api.rottentomatoes.com";
 
@@ -25,22 +25,22 @@ namespace Knapcode.RemindMeWhen.Core.Repositories
             _client = client;
         }
 
-        async Task<Page<MovieReleasedToHomeEvent>> IEventSearchRepository<MovieReleasedToHomeEvent>.EventSearchAsync(string query, int pageLimit, int pageNumber)
+        async Task<Page<MovieReleasedToHomeEvent>> IEventSearchRepository<MovieReleasedToHomeEvent>.SearchEventsAsync(string query, int pageLimit, int pageNumber)
         {
-            return await MovieReleaseToHomeEventsSearchAsync(query, pageLimit, pageNumber);
+            return await SearchMovieReleaseToHomeEventsAsync(query, pageLimit, pageNumber);
         }
 
-        async Task<Page<MovieReleasedToTheaterEvent>> IEventSearchRepository<MovieReleasedToTheaterEvent>.EventSearchAsync(string query, int pageLimit, int pageNumber)
+        async Task<Page<MovieReleasedToTheaterEvent>> IEventSearchRepository<MovieReleasedToTheaterEvent>.SearchEventsAsync(string query, int pageLimit, int pageNumber)
         {
-            return await MovieReleaseToTheaterEventsSearchAsync(query, pageLimit, pageNumber);
+            return await SearchMovieReleaseToTheaterEventsAsync(query, pageLimit, pageNumber);
         }
 
-        public async Task<Page<MovieReleasedToHomeEvent>> MovieReleaseToHomeEventsSearchAsync(string query, int pageLimit, int pageNumber)
+        public async Task<Page<MovieReleasedToHomeEvent>> SearchMovieReleaseToHomeEventsAsync(string query, int pageLimit, int pageNumber)
         {
             return await GetMovieReleasePageAsync<MovieReleasedToHomeEvent>(EventType.MovieReleasedToHome, query, pageLimit, pageNumber);
         }
 
-        public async Task<Page<MovieReleasedToTheaterEvent>> MovieReleaseToTheaterEventsSearchAsync(string query, int pageLimit, int pageNumber)
+        public async Task<Page<MovieReleasedToTheaterEvent>> SearchMovieReleaseToTheaterEventsAsync(string query, int pageLimit, int pageNumber)
         {
             return await GetMovieReleasePageAsync<MovieReleasedToTheaterEvent>(EventType.MovieReleasedToTheater, query, pageLimit, pageNumber);
         }

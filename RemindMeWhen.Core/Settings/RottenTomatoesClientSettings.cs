@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Knapcode.RemindMeWhen.Core.Clients.RottenTomatoes
+namespace Knapcode.RemindMeWhen.Core.Settings
 {
     public class RottenTomatoesClientSettings
     {
@@ -10,7 +10,7 @@ namespace Knapcode.RemindMeWhen.Core.Clients.RottenTomatoes
             RateLimits = new[]
             {
                 new RateLimit {Count = 5, Period = TimeSpan.FromSeconds(1)},
-                new RateLimit {Count = 10000, Period = TimeSpan.FromDays(1)},
+                new RateLimit {Count = 10000, Period = TimeSpan.FromDays(1)}
             };
         }
 
