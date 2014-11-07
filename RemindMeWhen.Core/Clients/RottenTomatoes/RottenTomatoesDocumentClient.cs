@@ -5,24 +5,17 @@ using System.Globalization;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web;
-using Knapcode.RemindMeWhen.Core.Clients.RottenTomatoes.Models;
 using Knapcode.RemindMeWhen.Core.Settings;
 
 namespace Knapcode.RemindMeWhen.Core.Clients.RottenTomatoes
 {
-    public class RottenTomatoesClient : IRottenTomatoesClient
+    public class RottenTomatoesDocumentClient : IRottenTomatoesDocumentClient
     {
-        private readonly IRottenTomatoesDeserializer _deserializer;
         private readonly HttpClient _httpClient;
         private readonly string _key;
 
-        public RottenTomatoesClient(IRottenTomatoesDeserializer deserializer, RottenTomatoesClientSettings settings)
+        public RottenTomatoesDocumentClient(RottenTomatoesClientSettings settings)
         {
-            if (deserializer == null)
-            {
-                throw new ArgumentNullException("deserializer");
-            }
-
             if (settings == null)
             {
                 throw new ArgumentNullException("settings");
@@ -33,7 +26,6 @@ namespace Knapcode.RemindMeWhen.Core.Clients.RottenTomatoes
                 throw new ArgumentException("The Rotten Tomatoes API key cannot be null.", "settings");
             }
 
-            _deserializer = deserializer;
             _key = settings.Key;
             _httpClient = new HttpClient
             {
@@ -41,7 +33,7 @@ namespace Knapcode.RemindMeWhen.Core.Clients.RottenTomatoes
             };
         }
 
-        public async Task<MovieCollection> SearchMoviesAsync(string query, int pageLimit = 30, int page = 1)
+        public async Task<ExternalDocument> SearchMoviesAsync(string query, int pageLimit = 30, int page = 1)
         {
             var parameters = new Dictionary<string, string>
             {
@@ -53,8 +45,21 @@ namespace Knapcode.RemindMeWhen.Core.Clients.RottenTomatoes
             string requestUri = GetRequestUri("movies.json", parameters);
 
             HttpResponseMessage response = await _httpClient.GetAsync(requestUri);
-            byte[] buffer = await response.Content.ReadAsByteArrayAsync();
-            return _deserializer.DeserializeMovieCollection(buffer);
+
+            return await GetExternalDocumentAsync(response);
+        }
+
+        private async Task<ExternalDocument> GetExternalDocumentAsync(HttpResponseMessage response)
+        {
+            response.EnsureSuccessStatusCode();
+
+            string documentIdentity = response.RequestMessage.RequestUri.ToString().Replace(_key, string.Empty);
+            byte[] documentContent = await response.Content.ReadAsByteArrayAsync();
+            return new ExternalDocument
+            {
+                Identity = documentIdentity,
+                Content = documentContent
+            };
         }
 
         private string GetRequestUri(string path, IEnumerable<KeyValuePair<string, string>> parameters)

@@ -1,6 +1,6 @@
 ﻿using System.Security.Cryptography;
 
-namespace Knapcode.RemindMeWhen.Core.Persistence
+namespace Knapcode.RemindMeWhen.Core.Support
 {
     public class Sha256HashAlgorithm : IHashAlgorithm
     {

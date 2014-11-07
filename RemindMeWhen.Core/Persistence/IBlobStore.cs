@@ -4,7 +4,7 @@ namespace Knapcode.RemindMeWhen.Core.Persistence
 {
     public interface IBlobStore
     {
-        Task<byte[]> Get(string key);
-        Task Set(string key, byte[] value);
+        Task<byte[]> GetAsync(string key);
+        Task SetAsync(string key, byte[] value);
     }
 }

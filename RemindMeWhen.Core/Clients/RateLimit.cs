@@ -1,6 +1,6 @@
 using System;
 
-namespace Knapcode.RemindMeWhen.Core
+namespace Knapcode.RemindMeWhen.Core.Clients
 {
     public class RateLimit
     {

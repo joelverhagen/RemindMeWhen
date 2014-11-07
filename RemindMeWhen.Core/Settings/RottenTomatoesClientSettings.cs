@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Knapcode.RemindMeWhen.Core.Clients;
 
 namespace Knapcode.RemindMeWhen.Core.Settings
 {

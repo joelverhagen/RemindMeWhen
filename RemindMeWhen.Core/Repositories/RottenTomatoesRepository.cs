@@ -2,13 +2,16 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Knapcode.RemindMeWhen.Core.Clients;
 using Knapcode.RemindMeWhen.Core.Clients.RottenTomatoes;
 using Knapcode.RemindMeWhen.Core.Clients.RottenTomatoes.Models;
 using Knapcode.RemindMeWhen.Core.Models;
+using Knapcode.RemindMeWhen.Core.Persistence;
+using Knapcode.RemindMeWhen.Core.Queue;
 
 namespace Knapcode.RemindMeWhen.Core.Repositories
 {
-    public class RottenTomatoesRepository : IEventSearchRepository<MovieReleasedToTheaterEvent>, IEventSearchRepository<MovieReleasedToHomeEvent>, IRottenTomatoesRepository
+    public class RottenTomatoesRepository : IRottenTomatoesRepository
     {
         private const string Source = "api.rottentomatoes.com";
 
@@ -18,21 +21,17 @@ namespace Knapcode.RemindMeWhen.Core.Repositories
             {EventType.MovieReleasedToTheater, r => r.Theater},
         };
 
-        private readonly IRottenTomatoesClient _client;
+        private readonly IRottenTomatoesDeserializer _deserializer;
+        private readonly IRottenTomatoesDocumentClient _externalDocumentClient;
+        private readonly IExternalDocumentStore _externalDocumentStore;
+        private readonly IQueue<ProcessExternalDocument> _queue;
 
-        public RottenTomatoesRepository(IRottenTomatoesClient client)
+        public RottenTomatoesRepository(IRottenTomatoesDocumentClient externalDocumentClient, IExternalDocumentStore externalDocumentStore, IQueue<ProcessExternalDocument> queue, IRottenTomatoesDeserializer deserializer)
         {
-            _client = client;
-        }
-
-        async Task<Page<MovieReleasedToHomeEvent>> IEventSearchRepository<MovieReleasedToHomeEvent>.SearchEventsAsync(string query, int pageLimit, int pageNumber)
-        {
-            return await SearchMovieReleaseToHomeEventsAsync(query, pageLimit, pageNumber);
-        }
-
-        async Task<Page<MovieReleasedToTheaterEvent>> IEventSearchRepository<MovieReleasedToTheaterEvent>.SearchEventsAsync(string query, int pageLimit, int pageNumber)
-        {
-            return await SearchMovieReleaseToTheaterEventsAsync(query, pageLimit, pageNumber);
+            _externalDocumentClient = externalDocumentClient;
+            _externalDocumentStore = externalDocumentStore;
+            _queue = queue;
+            _deserializer = deserializer;
         }
 
         public async Task<Page<MovieReleasedToHomeEvent>> SearchMovieReleaseToHomeEventsAsync(string query, int pageLimit, int pageNumber)
@@ -55,9 +54,16 @@ namespace Knapcode.RemindMeWhen.Core.Repositories
             }
 
             // query Rotten Tomatoes API
-            MovieCollection movieCollection = await _client.SearchMoviesAsync(query, pageLimit, pageNumber);
+            ExternalDocument document = await _externalDocumentClient.SearchMoviesAsync(query, pageLimit, pageNumber);
+
+            // persist the document
+            await _externalDocumentStore.SetAsync(document);
+
+            // enqueue the process queue message
+            await _queue.AddMessageAsync(new ProcessExternalDocument {Type = ExternalDocumentType.RottenTomatoes, Identitity = document.Identity});
 
             // mutate the result
+            MovieCollection movieCollection = _deserializer.DeserializeMovieCollection(document.Content);
             var movieReleases = new List<T>();
             bool hasNextPage = false;
             if (movieCollection != null && movieCollection.Movies != null)

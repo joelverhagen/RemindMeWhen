@@ -1,5 +1,10 @@
-﻿using System.IO;
+﻿using System;
+using System.Globalization;
+using System.IO;
+using System.Text;
 using System.Threading.Tasks;
+using Knapcode.RemindMeWhen.Core.Support;
+using Knapcode.RemindMeWhen.Core.Support.Extensions;
 using Microsoft.WindowsAzure.Storage.Blob;
 using Microsoft.WindowsAzure.Storage.Table;
 
@@ -7,72 +12,80 @@ namespace Knapcode.RemindMeWhen.Core.Persistence
 {
     public class AzureUniqueBlobStore : IBlobStore
     {
-        private readonly CloudBlobContainer _blobContainer;
+        private readonly CloudBlobContainer _cloudBlobContainer;
         private readonly IHashAlgorithm _hashAlgorithm;
-        private readonly CloudTable _table;
+        private readonly CloudTable _cloudTable;
 
-        public AzureUniqueBlobStore(CloudTable table, IHashAlgorithm hashAlgorithm, CloudBlobContainer blobContainer)
+        public AzureUniqueBlobStore(CloudTable cloudTable, IHashAlgorithm hashAlgorithm, CloudBlobContainer cloudBlobContainer)
         {
-            _table = table;
+            _cloudTable = cloudTable;
             _hashAlgorithm = hashAlgorithm;
-            _blobContainer = blobContainer;
+            _cloudBlobContainer = cloudBlobContainer;
         }
 
-        public async Task<byte[]> Get(string key)
+        public async Task<byte[]> GetAsync(string key)
         {
             // try to get the hash 
-            TableOperation operation = TableOperation.Retrieve<HashTableEntity>(key, key);
-            TableResult tableResult = await _table.ExecuteAsync(operation);
-            var hashTableEntity = tableResult.Result as HashTableEntity;
+            TableOperation operation = TableOperation.Retrieve<BlobEntity>(key, key);
+            TableResult tableResult = await _cloudTable.ExecuteAsync(operation);
+            var hashTableEntity = tableResult.Result as BlobEntity;
             if (hashTableEntity == null)
             {
                 return null;
             }
 
             // get the blob if it exists
-            string blobKey = hashTableEntity.Hash.ToString();
-            ICloudBlob blob = await _blobContainer.GetBlobReferenceFromServerAsync(blobKey);
+            string blobKey = hashTableEntity.BlobHash;
+            ICloudBlob blob = await _cloudBlobContainer.GetBlobReferenceFromServerAsync(blobKey);
             if (!(await blob.ExistsAsync()))
             {
                 return null;
             }
 
-            var stream = new MemoryStream();
-            await blob.DownloadToStreamAsync(stream);
-            return stream.ToArray();
+            // download and decompress the document
+            var downloadedStream = new MemoryStream();
+            await blob.DownloadToStreamAsync(downloadedStream);
+            return downloadedStream.ToArray().Decompress();
         }
 
-        public async Task Set(string key, byte[] value)
+        public async Task SetAsync(string key, byte[] value)
         {
-            // get a hash of the blob
-            Hash hash = _hashAlgorithm.GetHash(value);
-
             // associate the key with the hash
-            var hashTableEntity = new HashTableEntity
+            var blobEntity = new BlobEntity
             {
-                PartitionKey = key,
-                RowKey = key,
-                Hash = hash,
-                IsCompressed = false
+                PartitionKey = GetPartitionKey(key),
+                RowKey = Guid.NewGuid().ToString(),
+                OriginalKey = key,
+                BlobHash = _hashAlgorithm.GetHash(value).ToString(),
+                Created = DateTime.UtcNow
             };
-            TableOperation operation = TableOperation.InsertOrReplace(hashTableEntity);
-            await _table.ExecuteAsync(operation);
+            TableOperation operation = TableOperation.InsertOrReplace(blobEntity);
+            await _cloudTable.ExecuteAsync(operation);
 
             // persist the blob if it doesn't exist yet
-            string blobKey = hash.ToString();
-            ICloudBlob blob = await _blobContainer.GetBlobReferenceFromServerAsync(blobKey);
+            string blobKey = blobEntity.BlobHash;
+            ICloudBlob blob = _cloudBlobContainer.GetBlockBlobReference(blobKey);
             if (await blob.ExistsAsync())
             {
                 return;
             }
 
-            await blob.UploadFromByteArrayAsync(value, 0, value.Length);
+            // compress and upload the document
+            byte[] compressedValue = value.Compress();
+            await blob.UploadFromByteArrayAsync(compressedValue, 0, compressedValue.Length);
         }
 
-        private class HashTableEntity : TableEntity
+        private string GetPartitionKey(string identifier)
         {
-            public Hash Hash { get; set; }
-            public bool IsCompressed { get; set; }
+            byte[] buffer = Encoding.UTF8.GetBytes(identifier);
+            return _hashAlgorithm.GetHash(buffer).ToString();
+        }
+
+        private class BlobEntity : TableEntity
+        {
+            public string OriginalKey { get; set; }
+            public string BlobHash { get; set; }
+            public DateTime Created { get; set; }
         }
     }
 }

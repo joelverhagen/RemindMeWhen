@@ -3,7 +3,7 @@ using Knapcode.RemindMeWhen.Core.Settings;
 using Ninject;
 using Ninject.Modules;
 
-namespace Knapcode.RemindMeWhen.Core.Modules
+namespace Knapcode.RemindMeWhen.Core.Support.Modules
 {
     public class ClientModule : NinjectModule
     {
@@ -11,8 +11,8 @@ namespace Knapcode.RemindMeWhen.Core.Modules
         {
             var settings = Kernel.Get<RemindMeWhenSettings>();
 
-            Bind<RottenTomatoesClientSettings>().ToConstant(settings.RottenTomatoesClientSettings).WhenInjectedInto<RottenTomatoesClient>();
-            Bind<IRottenTomatoesClient>().To<RottenTomatoesClient>();
+            Bind<RottenTomatoesClientSettings>().ToConstant(settings.RottenTomatoesClientSettings).WhenInjectedInto<RottenTomatoesDocumentClient>();
+            Bind<IRottenTomatoesDocumentClient>().To<RottenTomatoesDocumentClient>();
             Bind<IRottenTomatoesDeserializer>().To<RottenTomatoesDeserializer>();
         }
     }

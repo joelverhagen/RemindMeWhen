@@ -1,10 +1,11 @@
-﻿using Knapcode.RemindMeWhen.Core.Clients.RottenTomatoes.Models;
+﻿using System.Text;
+using Knapcode.RemindMeWhen.Core.Clients.RottenTomatoes.Models;
 using Knapcode.StandardSerializer;
 using Newtonsoft.Json;
 
 namespace Knapcode.RemindMeWhen.Core.Clients.RottenTomatoes
 {
-    public class RottenTomatoesDeserializer : JsonDeserializer, IDeserializer<MovieCollection>, IDeserializer<Movie>, IRottenTomatoesDeserializer
+    public class RottenTomatoesDeserializer : IRottenTomatoesDeserializer
     {
         private static readonly JsonSerializerSettings JsonSerializerSettings;
 
@@ -23,28 +24,20 @@ namespace Knapcode.RemindMeWhen.Core.Clients.RottenTomatoes
             };
         }
 
-        public RottenTomatoesDeserializer() : base(JsonSerializerSettings)
+        public MovieCollection DeserializeMovieCollection(byte[] content)
         {
+            return Deserialize<MovieCollection>(content);
         }
 
-        Movie IDeserializer<Movie>.Deserialize(byte[] buffer)
+        public Movie DeserializeMovie(byte[] content)
         {
-            return DeserializeMovie(buffer);
+            return Deserialize<Movie>(content);
         }
 
-        MovieCollection IDeserializer<MovieCollection>.Deserialize(byte[] buffer)
+        private static T Deserialize<T>(byte[] content)
         {
-            return DeserializeMovieCollection(buffer);
-        }
-
-        public MovieCollection DeserializeMovieCollection(byte[] buffer)
-        {
-            return Deserialize<MovieCollection>(buffer);
-        }
-
-        public Movie DeserializeMovie(byte[] buffer)
-        {
-            return Deserialize<Movie>(buffer);
+            string json = Encoding.UTF8.GetString(content);
+            return JsonConvert.DeserializeObject<T>(json, JsonSerializerSettings);
         }
     }
 }

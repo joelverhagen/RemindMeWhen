@@ -6,9 +6,9 @@ using Microsoft.WindowsAzure.Storage.Table;
 using Ninject;
 using Ninject.Modules;
 
-namespace Knapcode.RemindMeWhen.Core.Modules
+namespace Knapcode.RemindMeWhen.Core.Support.Modules
 {
-    public class AzureUniqueBlobStoreModule : NinjectModule
+    public class PersistenceModule : NinjectModule
     {
         public override void Load()
         {
