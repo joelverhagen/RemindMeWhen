@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Web;
 using Knapcode.RemindMeWhen.Core.Identities;
 using Knapcode.RemindMeWhen.Core.Logging;
+using Knapcode.RemindMeWhen.Core.Models;
 using Knapcode.RemindMeWhen.Core.Settings;
 using Knapcode.RemindMeWhen.Core.Support;
 
@@ -35,18 +36,21 @@ namespace Knapcode.RemindMeWhen.Core.Clients.RottenTomatoes
             };
         }
 
-        public async Task<Document> SearchMoviesAsync(string query, int page, int pageLimit)
+        public async Task<Document> SearchMoviesAsync(string query, PageOffset pageOffset)
         {
+            Guard.ArgumentNotNull(query, "query");
+            Guard.ArgumentNotNull(pageOffset, "pageOffset");
+
             var parameters = new Dictionary<string, string>
             {
                 {"q", query},
-                {"page_limit", pageLimit.ToString(CultureInfo.InvariantCulture)},
-                {"page", page.ToString(CultureInfo.InvariantCulture)}
+                {"page_limit", pageOffset.Size.ToString(CultureInfo.InvariantCulture)},
+                {"page", (pageOffset.Index + 1).ToString(CultureInfo.InvariantCulture)}
             };
 
             string requestUri = GetRequestUri("movies.json", parameters);
 
-            using (EventTimer.OnCompletion(d => _eventSource.OnSearchedRottenTomatoesForMovies(query, page, page, d)))
+            using (EventTimer.OnCompletion(d => _eventSource.OnSearchedRottenTomatoesForMovies(query, pageOffset, d)))
             {
                 HttpResponseMessage response = await _httpClient.GetAsync(requestUri);
                 return await GetExternalDocumentAsync(response);

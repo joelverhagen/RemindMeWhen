@@ -25,9 +25,9 @@ namespace Knapcode.RemindMeWhen.Core.Repositories
         private readonly IRottenTomatoesDeserializer _deserializer;
         private readonly IDocumentStore _documentStore;
         private readonly IRottenTomatoesDocumentClient _externalDocumentClient;
-        private readonly IQueue<ProcessExternalDocument> _queue;
+        private readonly IQueue<ProcessDocument> _queue;
 
-        public RottenTomatoesRepository(IRottenTomatoesDocumentClient externalDocumentClient, IDocumentStore documentStore, IQueue<ProcessExternalDocument> queue, IRottenTomatoesDeserializer deserializer)
+        public RottenTomatoesRepository(IRottenTomatoesDocumentClient externalDocumentClient, IDocumentStore documentStore, IQueue<ProcessDocument> queue, IRottenTomatoesDeserializer deserializer)
         {
             _externalDocumentClient = externalDocumentClient;
             _documentStore = documentStore;
@@ -35,17 +35,17 @@ namespace Knapcode.RemindMeWhen.Core.Repositories
             _deserializer = deserializer;
         }
 
-        public async Task<Page<MovieReleasedToHomeEvent>> SearchMovieReleaseToHomeEventsAsync(string query, int pageLimit, int pageNumber)
+        public async Task<Page<MovieReleasedToHomeEvent>> SearchMovieReleaseToHomeEventsAsync(string query, PageOffset pageOffset)
         {
-            return await GetMovieReleasePageAsync<MovieReleasedToHomeEvent>(EventType.MovieReleasedToHome, query, pageLimit, pageNumber);
+            return await GetMovieReleasePageAsync<MovieReleasedToHomeEvent>(EventType.MovieReleasedToHome, query, pageOffset);
         }
 
-        public async Task<Page<MovieReleasedToTheaterEvent>> SearchMovieReleaseToTheaterEventsAsync(string query, int pageLimit, int pageNumber)
+        public async Task<Page<MovieReleasedToTheaterEvent>> SearchMovieReleaseToTheaterEventsAsync(string query, PageOffset pageOffset)
         {
-            return await GetMovieReleasePageAsync<MovieReleasedToTheaterEvent>(EventType.MovieReleasedToTheater, query, pageLimit, pageNumber);
+            return await GetMovieReleasePageAsync<MovieReleasedToTheaterEvent>(EventType.MovieReleasedToTheater, query, pageOffset);
         }
 
-        private async Task<Page<T>> GetMovieReleasePageAsync<T>(EventType eventType, string query, int pageLimit, int pageNumber) where T : MovieReleasedEvent
+        private async Task<Page<T>> GetMovieReleasePageAsync<T>(EventType eventType, string query, PageOffset pageOffset) where T : MovieReleasedEvent
         {
             Func<ReleaseDates, DateTime?> getDate;
             if (!DateGetters.TryGetValue(eventType, out getDate))
@@ -55,7 +55,7 @@ namespace Knapcode.RemindMeWhen.Core.Repositories
             }
 
             // query Rotten Tomatoes API
-            Document document = await _externalDocumentClient.SearchMoviesAsync(query, pageLimit, pageNumber);
+            Document document = await _externalDocumentClient.SearchMoviesAsync(query, pageOffset);
 
             // persist the document
             bool isDuplicate = await _documentStore.PersistUniqueDocumentAsync(document);
@@ -63,7 +63,7 @@ namespace Knapcode.RemindMeWhen.Core.Repositories
             // enqueue the process queue message if the document is new
             if (!isDuplicate)
             {
-                await _queue.AddMessageAsync(new ProcessExternalDocument {DocumentIdentity = document.Identity});
+                await _queue.AddMessageAsync(new ProcessDocument {DocumentIdentity = document.Identity});
             }
 
             // mutate the result
@@ -88,13 +88,12 @@ namespace Knapcode.RemindMeWhen.Core.Repositories
                     movieReleases.Add(GetMovieReleaseEvent<T>(movie, eventType, date));
                 }
 
-                hasNextPage = movieCollection.Movies.Count() >= pageLimit;
+                hasNextPage = movieCollection.Movies.Count() >= pageOffset.Size;
             }
 
             return new Page<T>
             {
-                PageLimit = pageLimit,
-                PageNumber = pageNumber,
+                Offset = pageOffset,
                 Entries = movieReleases,
                 HasNextPage = hasNextPage
             };

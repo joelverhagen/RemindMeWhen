@@ -71,8 +71,9 @@ namespace Knapcode.RemindMeWhen.Web
                 AzureStorageSettings = new AzureStorageSettings
                 {
                     ConnectionString = "UseDevelopmentStorage=true;",
-                    ExternalDocumentBlobContainerName = "externaldocument",
-                    ExternalDocumentHashTableName = "externaldocumenthash"
+                    DocumentBlobContainerName = "document",
+                    DocumentMetadataTableName = "documentmetadata",
+                    ProcessDocumentQueueName = "processdocument"
                 },
                 RottenTomatoesSettings = new RottenTomatoesSettings
                 {

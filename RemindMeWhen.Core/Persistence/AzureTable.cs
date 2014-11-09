@@ -7,39 +7,39 @@ using Microsoft.WindowsAzure.Storage.Table;
 
 namespace Knapcode.RemindMeWhen.Core.Persistence
 {
-    public class AzureKeyValueStore<TValue> : IKeyValueStore<string, TValue>
+    public class AzureTable<T> : ITable<T>
     {
         private readonly CloudTable _cloudTable;
         private readonly IEventSource _eventSource;
 
-        public AzureKeyValueStore(IEventSource eventSource, CloudTable cloudTable)
+        public AzureTable(IEventSource eventSource, CloudTable cloudTable)
         {
             _eventSource = eventSource;
             _cloudTable = cloudTable;
         }
 
-        public async Task<TValue> GetAsync(string key)
+        public async Task<T> GetAsync(string key)
         {
-            TableOperation operation = TableOperation.Retrieve<GenericTableEntity<TValue>>(key, key);
+            TableOperation operation = TableOperation.Retrieve<GenericTableEntity<T>>(key, key);
             TableResult tableResult;
             using (EventTimer.OnCompletion(d => _eventSource.OnFetchedKeyValueFromAzure(key, d)))
             {
                 tableResult = await _cloudTable.ExecuteAsync(operation);
             }
 
-            var record = tableResult.Result as GenericTableEntity<TValue>;
+            var record = tableResult.Result as GenericTableEntity<T>;
             if (record == null)
             {
                 _eventSource.OnMissingKeyValueFromAzure(key);
-                return default(TValue);
+                return default(T);
             }
 
             return record.Content;
         }
 
-        public async Task SetAsync(string key, TValue value)
+        public async Task SetAsync(string key, T value)
         {
-            var entity = new GenericTableEntity<TValue>
+            var entity = new GenericTableEntity<T>
             {
                 PartitionKey = key,
                 RowKey = key,
@@ -52,13 +52,13 @@ namespace Knapcode.RemindMeWhen.Core.Persistence
             }
         }
 
-        private class GenericTableEntity<T> : TableEntity
+        private class GenericTableEntity<TTable> : TableEntity
         {
-            public T Content { get; set; }
+            public TTable Content { get; set; }
 
             public override void ReadEntity(IDictionary<string, EntityProperty> properties, OperationContext operationContext)
             {
-                Content = Activator.CreateInstance<T>();
+                Content = Activator.CreateInstance<TTable>();
                 ReadUserObject(Content, properties, operationContext);
             }
 

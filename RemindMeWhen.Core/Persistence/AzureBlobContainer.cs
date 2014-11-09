@@ -1,18 +1,17 @@
 using System.IO;
 using System.Threading.Tasks;
-using Knapcode.RemindMeWhen.Core.Extensions;
 using Knapcode.RemindMeWhen.Core.Logging;
 using Knapcode.RemindMeWhen.Core.Support;
 using Microsoft.WindowsAzure.Storage.Blob;
 
 namespace Knapcode.RemindMeWhen.Core.Persistence
 {
-    public class AzureBlobStore : IBlobStore
+    public class AzureBlobContainer : IBlobContainer
     {
         private readonly CloudBlobContainer _blobContainer;
         private readonly IEventSource _eventSource;
 
-        public AzureBlobStore(IEventSource eventSource, CloudBlobContainer blobContainer)
+        public AzureBlobContainer(IEventSource eventSource, CloudBlobContainer blobContainer)
         {
             _eventSource = eventSource;
             _blobContainer = blobContainer;

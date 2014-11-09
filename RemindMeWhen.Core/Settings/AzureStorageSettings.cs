@@ -3,8 +3,8 @@
     public class AzureStorageSettings
     {
         public string ConnectionString { get; set; }
-        public string ExternalDocumentHashTableName { get; set; }
-        public string ExternalDocumentBlobContainerName { get; set; }
-        public AzureQueueSettings QueueSettings { get; set; }
+        public string DocumentMetadataTableName { get; set; }
+        public string DocumentBlobContainerName { get; set; }
+        public string ProcessDocumentQueueName { get; set; }
     }
 }

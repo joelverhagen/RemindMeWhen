@@ -4,6 +4,6 @@ namespace Knapcode.RemindMeWhen.Core.Queue
 {
     public interface IQueueClient
     {
-        Task<IQueue<T>> GetQueueAsync<T>();
+        IQueue<T> GetQueue<T>(string queueName);
     }
 }

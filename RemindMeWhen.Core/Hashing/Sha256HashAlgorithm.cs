@@ -9,7 +9,7 @@ namespace Knapcode.RemindMeWhen.Core.Hashing
         {
             SHA256 sha256 = SHA256.Create();
             byte[] value = sha256.ComputeHash(buffer);
-            return "SHA256-" + Base64Url.Encode(value);
+            return Base64Url.Encode(value);
         }
     }
 }

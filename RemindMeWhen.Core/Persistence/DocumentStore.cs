@@ -10,24 +10,24 @@ namespace Knapcode.RemindMeWhen.Core.Persistence
 {
     public class DocumentStore : IDocumentStore
     {
-        private readonly IBlobStore _blobStore;
+        private readonly IBlobContainer _blobContainer;
         private readonly IEventSource _eventSource;
         private readonly IHashAlgorithm _hashAlgorithm;
-        private readonly IKeyValueStore<string, DocumentMetadata> _keyValueStore;
+        private readonly ITable<DocumentMetadata> _table;
 
-        public DocumentStore(IEventSource eventSource, IHashAlgorithm hashAlgorithm, IKeyValueStore<string, DocumentMetadata> keyValueStore, IBlobStore blobStore)
+        public DocumentStore(IEventSource eventSource, IHashAlgorithm hashAlgorithm, ITable<DocumentMetadata> table, IBlobContainer blobContainer)
         {
             _eventSource = eventSource;
             _hashAlgorithm = hashAlgorithm;
-            _keyValueStore = keyValueStore;
-            _blobStore = blobStore;
+            _table = table;
+            _blobContainer = blobContainer;
         }
 
         public async Task<DocumentMetadata> GetDocumentMetadataAsync(DocumentIdentity identity)
         {
             // get the metadata
             string metadataKey = GetMetadataKey(identity);
-            DocumentMetadata metadata = await _keyValueStore.GetAsync(metadataKey);
+            DocumentMetadata metadata = await _table.GetAsync(metadataKey);
             if (metadata == null)
             {
                 _eventSource.OnMissingDocumentMetadataFromDocumentStore(identity, metadataKey);
@@ -43,7 +43,7 @@ namespace Knapcode.RemindMeWhen.Core.Persistence
 
             // get the content
             string documentKey = metadata.Hash;
-            byte[] content = await _blobStore.GetAsync(documentKey);
+            byte[] content = await _blobContainer.GetAsync(documentKey);
             if (content == null)
             {
                 _eventSource.OnMissingDocumentFromDocumentStore(identity, documentKey);
@@ -68,17 +68,17 @@ namespace Knapcode.RemindMeWhen.Core.Persistence
                 LastPersisted = DateTime.UtcNow
             };
             string metadataKey = GetMetadataKey(document.Identity);
-            await _keyValueStore.SetAsync(metadataKey, metadata);
+            await _table.SetAsync(metadataKey, metadata);
 
             // save the content if it doesn't already exist
             string documentKey = metadata.Hash;
-            if (await _blobStore.ExistsAsync(documentKey))
+            if (await _blobContainer.ExistsAsync(documentKey))
             {
                 _eventSource.OnDuplicateFoundInDocumentStore(document.Identity, documentKey);
                 return true;
             }
 
-            await _blobStore.SetAsync(documentKey, document.Content);
+            await _blobContainer.SetAsync(documentKey, document.Content);
             return false;
         }
 

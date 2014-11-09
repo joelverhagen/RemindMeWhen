@@ -5,6 +5,6 @@ namespace Knapcode.RemindMeWhen.Core.Clients.RottenTomatoes
 {
     public interface IRottenTomatoesDocumentClient
     {
-        Task<Document> SearchMoviesAsync(string query, int page, int pageLimit);
+        Task<Document> SearchMoviesAsync(string query, PageOffset pageOffset);
     }
 }

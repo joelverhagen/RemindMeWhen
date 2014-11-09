@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Mvc;
@@ -12,13 +11,11 @@ namespace Knapcode.RemindMeWhen.Website.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly IEventSearchRepository<MovieReleasedToHomeEvent> _releasedToHomeRepository;
-        private readonly IEventSearchRepository<MovieReleasedToTheaterEvent> _releasedToTheaterRepository;
+        private readonly IRottenTomatoesRepository _rottenTomatoesRepository;
 
-        public HomeController(IEventSearchRepository<MovieReleasedToTheaterEvent> releasedToTheaterRepository, IEventSearchRepository<MovieReleasedToHomeEvent> releasedToHomeRepository)
+        public HomeController(IRottenTomatoesRepository rottenTomatoesRepository)
         {
-            _releasedToTheaterRepository = releasedToTheaterRepository;
-            _releasedToHomeRepository = releasedToHomeRepository;
+            _rottenTomatoesRepository = rottenTomatoesRepository;
         }
 
         public async Task<ActionResult> Index(string eventType = null, string query = null)
@@ -50,10 +47,10 @@ namespace Knapcode.RemindMeWhen.Website.Controllers
             switch (type)
             {
                 case EventType.MovieReleasedToTheater:
-                    events = (await _releasedToTheaterRepository.SearchEventsAsync(query, 50, 1)).Entries;
+                    events = (await _rottenTomatoesRepository.SearchMovieReleaseToTheaterEventsAsync(query, new PageOffset(0, 25))).Entries;
                     break;
                 case EventType.MovieReleasedToHome:
-                    events = (await _releasedToHomeRepository.SearchEventsAsync(query, 50, 1)).Entries;
+                    events = (await _rottenTomatoesRepository.SearchMovieReleaseToTheaterEventsAsync(query, new PageOffset(0, 25))).Entries;
                     break;
                 default:
                     events = Enumerable.Empty<MovieReleasedEvent>();
