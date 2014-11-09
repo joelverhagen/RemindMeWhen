@@ -1,4 +1,5 @@
 ﻿using System;
+using Knapcode.RemindMeWhen.Core.Identities;
 
 namespace Knapcode.RemindMeWhen.Core.Models
 {

@@ -14,18 +14,16 @@ namespace Knapcode.RemindMeWhen.Core.Queue
             _cloudQueue = cloudQueue;
         }
 
+        public async Task<QueueMessage<T>> PeekMessageAsync()
+        {
+            CloudQueueMessage cloudQueueMessage = await _cloudQueue.PeekMessageAsync();
+            return Deserialize(cloudQueueMessage);
+        }
+
         public async Task<QueueMessage<T>> GetMessageAsync()
         {
             CloudQueueMessage cloudQueueMessage = await _cloudQueue.GetMessageAsync();
-
-            T deserializedContent = Deserialize(cloudQueueMessage.AsString);
-
-            return new QueueMessage<T>
-            {
-                Content = deserializedContent,
-                Id = cloudQueueMessage.Id,
-                PopReceipt = cloudQueueMessage.PopReceipt
-            };
+            return Deserialize(cloudQueueMessage);
         }
 
         public async Task DeleteMessageAsync(QueueMessage<T> queueMessage)
@@ -57,9 +55,15 @@ namespace Knapcode.RemindMeWhen.Core.Queue
             return JsonConvert.SerializeObject(deserializedContent);
         }
 
-        private static T Deserialize(string serializedContent)
+        private static QueueMessage<T> Deserialize(CloudQueueMessage cloudQueueMessage)
         {
-            return JsonConvert.DeserializeObject<T>(serializedContent);
+            var deserializedContent = JsonConvert.DeserializeObject<T>(cloudQueueMessage.AsString);
+            return new QueueMessage<T>
+            {
+                Content = deserializedContent,
+                Id = cloudQueueMessage.Id,
+                PopReceipt = cloudQueueMessage.PopReceipt
+            };
         }
     }
 }

@@ -63,7 +63,7 @@ namespace Knapcode.RemindMeWhen.Web
         /// <param name="kernel">The kernel.</param>
         private static void RegisterServices(IKernel kernel)
         {
-            string rottenTomatoesAppSettingsKey = typeof (RottenTomatoesClientSettings).FullName + ".Key";
+            string rottenTomatoesAppSettingsKey = typeof (RottenTomatoesSettings).FullName + ".Key";
             string rottenTomatoesKey = ConfigurationManager.AppSettings.Get(rottenTomatoesAppSettingsKey);
 
             var settings = new RemindMeWhenSettings
@@ -74,7 +74,7 @@ namespace Knapcode.RemindMeWhen.Web
                     ExternalDocumentBlobContainerName = "externaldocument",
                     ExternalDocumentHashTableName = "externaldocumenthash"
                 },
-                RottenTomatoesClientSettings = new RottenTomatoesClientSettings
+                RottenTomatoesSettings = new RottenTomatoesSettings
                 {
                     Key = rottenTomatoesKey
                 }

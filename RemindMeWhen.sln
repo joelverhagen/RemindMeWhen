@@ -11,6 +11,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RemindMeWhen.Website", "Rem
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RemindMeWhen.Web", "RemindMeWhen.Web\RemindMeWhen.Web.csproj", "{34A2742E-2C4A-4982-8F78-09B7ABF6F53B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RemindMeWhen.QueueJob", "RemindMeWhen.QueueJob\RemindMeWhen.QueueJob.csproj", "{9F73151C-D242-450E-869D-C609D6CC032D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RemindMeWhen.Core.Tests", "RemindMeWhen.Core.Tests\RemindMeWhen.Core.Tests.csproj", "{FDE21C47-DF58-41EE-9D66-3F42D19BEC15}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +37,14 @@ Global
 		{34A2742E-2C4A-4982-8F78-09B7ABF6F53B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{34A2742E-2C4A-4982-8F78-09B7ABF6F53B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{34A2742E-2C4A-4982-8F78-09B7ABF6F53B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9F73151C-D242-450E-869D-C609D6CC032D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9F73151C-D242-450E-869D-C609D6CC032D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9F73151C-D242-450E-869D-C609D6CC032D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9F73151C-D242-450E-869D-C609D6CC032D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FDE21C47-DF58-41EE-9D66-3F42D19BEC15}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FDE21C47-DF58-41EE-9D66-3F42D19BEC15}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FDE21C47-DF58-41EE-9D66-3F42D19BEC15}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FDE21C47-DF58-41EE-9D66-3F42D19BEC15}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -4,9 +4,9 @@ using Knapcode.RemindMeWhen.Core.Clients;
 
 namespace Knapcode.RemindMeWhen.Core.Settings
 {
-    public class RottenTomatoesClientSettings
+    public class RottenTomatoesSettings
     {
-        public RottenTomatoesClientSettings()
+        public RottenTomatoesSettings()
         {
             RateLimits = new[]
             {

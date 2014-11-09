@@ -1,7 +1,7 @@
 ﻿using System.IO;
 using System.IO.Compression;
 
-namespace Knapcode.RemindMeWhen.Core.Support.Extensions
+namespace Knapcode.RemindMeWhen.Core.Extensions
 {
     public static class ByteArrayExtensions
     {

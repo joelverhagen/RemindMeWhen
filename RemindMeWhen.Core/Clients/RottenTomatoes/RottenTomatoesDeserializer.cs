@@ -29,11 +29,6 @@ namespace Knapcode.RemindMeWhen.Core.Clients.RottenTomatoes
             return Deserialize<MovieCollection>(content);
         }
 
-        public Movie DeserializeMovie(byte[] content)
-        {
-            return Deserialize<Movie>(content);
-        }
-
         private static T Deserialize<T>(byte[] content)
         {
             string json = Encoding.UTF8.GetString(content);

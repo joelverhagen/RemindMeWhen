@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Knapcode.RemindMeWhen.Core.Clients;
 using Knapcode.RemindMeWhen.Core.Clients.RottenTomatoes;
 using Knapcode.RemindMeWhen.Core.Clients.RottenTomatoes.Models;
+using Knapcode.RemindMeWhen.Core.Identities;
 using Knapcode.RemindMeWhen.Core.Models;
 using Knapcode.RemindMeWhen.Core.Persistence;
 using Knapcode.RemindMeWhen.Core.Queue;
@@ -22,14 +23,14 @@ namespace Knapcode.RemindMeWhen.Core.Repositories
         };
 
         private readonly IRottenTomatoesDeserializer _deserializer;
+        private readonly IDocumentStore _documentStore;
         private readonly IRottenTomatoesDocumentClient _externalDocumentClient;
-        private readonly IExternalDocumentStore _externalDocumentStore;
         private readonly IQueue<ProcessExternalDocument> _queue;
 
-        public RottenTomatoesRepository(IRottenTomatoesDocumentClient externalDocumentClient, IExternalDocumentStore externalDocumentStore, IQueue<ProcessExternalDocument> queue, IRottenTomatoesDeserializer deserializer)
+        public RottenTomatoesRepository(IRottenTomatoesDocumentClient externalDocumentClient, IDocumentStore documentStore, IQueue<ProcessExternalDocument> queue, IRottenTomatoesDeserializer deserializer)
         {
             _externalDocumentClient = externalDocumentClient;
-            _externalDocumentStore = externalDocumentStore;
+            _documentStore = documentStore;
             _queue = queue;
             _deserializer = deserializer;
         }
@@ -54,13 +55,16 @@ namespace Knapcode.RemindMeWhen.Core.Repositories
             }
 
             // query Rotten Tomatoes API
-            ExternalDocument document = await _externalDocumentClient.SearchMoviesAsync(query, pageLimit, pageNumber);
+            Document document = await _externalDocumentClient.SearchMoviesAsync(query, pageLimit, pageNumber);
 
             // persist the document
-            await _externalDocumentStore.SetAsync(document);
+            bool isDuplicate = await _documentStore.PersistUniqueDocumentAsync(document);
 
-            // enqueue the process queue message
-            await _queue.AddMessageAsync(new ProcessExternalDocument {Type = ExternalDocumentType.RottenTomatoes, Identitity = document.Identity});
+            // enqueue the process queue message if the document is new
+            if (!isDuplicate)
+            {
+                await _queue.AddMessageAsync(new ProcessExternalDocument {DocumentIdentity = document.Identity});
+            }
 
             // mutate the result
             MovieCollection movieCollection = _deserializer.DeserializeMovieCollection(document.Content);

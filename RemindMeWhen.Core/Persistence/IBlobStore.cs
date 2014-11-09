@@ -6,5 +6,6 @@ namespace Knapcode.RemindMeWhen.Core.Persistence
     {
         Task<byte[]> GetAsync(string key);
         Task SetAsync(string key, byte[] value);
+        Task<bool> ExistsAsync(string key);
     }
 }

@@ -5,27 +5,29 @@ using System.Globalization;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web;
+using Knapcode.RemindMeWhen.Core.Identities;
+using Knapcode.RemindMeWhen.Core.Logging;
 using Knapcode.RemindMeWhen.Core.Settings;
+using Knapcode.RemindMeWhen.Core.Support;
 
 namespace Knapcode.RemindMeWhen.Core.Clients.RottenTomatoes
 {
     public class RottenTomatoesDocumentClient : IRottenTomatoesDocumentClient
     {
+        private readonly IEventSource _eventSource;
         private readonly HttpClient _httpClient;
         private readonly string _key;
 
-        public RottenTomatoesDocumentClient(RottenTomatoesClientSettings settings)
+        public RottenTomatoesDocumentClient(IEventSource eventSource, RottenTomatoesSettings settings)
         {
-            if (settings == null)
-            {
-                throw new ArgumentNullException("settings");
-            }
+            Guard.ArgumentNotNull(settings, "settings");
 
             if (string.IsNullOrWhiteSpace(settings.Key))
             {
-                throw new ArgumentException("The Rotten Tomatoes API key cannot be null.", "settings");
+                throw new ArgumentException("The Rotten Tomatoes API key cannot be null or just whitespace.", "settings");
             }
 
+            _eventSource = eventSource;
             _key = settings.Key;
             _httpClient = new HttpClient
             {
@@ -33,7 +35,7 @@ namespace Knapcode.RemindMeWhen.Core.Clients.RottenTomatoes
             };
         }
 
-        public async Task<ExternalDocument> SearchMoviesAsync(string query, int pageLimit = 30, int page = 1)
+        public async Task<Document> SearchMoviesAsync(string query, int page, int pageLimit)
         {
             var parameters = new Dictionary<string, string>
             {
@@ -44,20 +46,22 @@ namespace Knapcode.RemindMeWhen.Core.Clients.RottenTomatoes
 
             string requestUri = GetRequestUri("movies.json", parameters);
 
-            HttpResponseMessage response = await _httpClient.GetAsync(requestUri);
-
-            return await GetExternalDocumentAsync(response);
+            using (EventTimer.OnCompletion(d => _eventSource.OnSearchedRottenTomatoesForMovies(query, page, page, d)))
+            {
+                HttpResponseMessage response = await _httpClient.GetAsync(requestUri);
+                return await GetExternalDocumentAsync(response);
+            }
         }
 
-        private async Task<ExternalDocument> GetExternalDocumentAsync(HttpResponseMessage response)
+        private async Task<Document> GetExternalDocumentAsync(HttpResponseMessage response)
         {
             response.EnsureSuccessStatusCode();
 
-            string documentIdentity = response.RequestMessage.RequestUri.ToString().Replace(_key, string.Empty);
+            string typeIdentity = response.RequestMessage.RequestUri.ToString().Replace(_key, "key");
             byte[] documentContent = await response.Content.ReadAsByteArrayAsync();
-            return new ExternalDocument
+            return new Document
             {
-                Identity = documentIdentity,
+                Identity = new DocumentIdentity(DocumentType.RottenTomatoes, typeIdentity),
                 Content = documentContent
             };
         }

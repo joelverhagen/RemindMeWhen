@@ -1,6 +1,6 @@
 namespace Knapcode.RemindMeWhen.Core.Clients
 {
-    public enum ExternalDocumentType
+    public enum DocumentType
     {
         RottenTomatoes = 0
     }

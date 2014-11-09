@@ -4,7 +4,7 @@ namespace Knapcode.RemindMeWhen.Core.Settings
 {
     public class RemindMeWhenSettings
     {
-        public RottenTomatoesClientSettings RottenTomatoesClientSettings { get; set; }
+        public RottenTomatoesSettings RottenTomatoesSettings { get; set; }
         public AzureStorageSettings AzureStorageSettings { get; set; }
     }
 }
