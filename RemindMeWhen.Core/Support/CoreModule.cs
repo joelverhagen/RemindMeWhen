@@ -23,6 +23,7 @@ namespace Knapcode.RemindMeWhen.Core.Support
             var settings = Kernel.Get<RemindMeWhenSettings>();
 
             // AzureStorageSettings
+            // TODO: create the Azure resources somewhere else...
             AzureStorageSettings azureStorageSettings = settings.AzureStorageSettings;
 
             CloudStorageAccount storageAccount = CloudStorageAccount.Parse(azureStorageSettings.ConnectionString);
@@ -31,12 +32,18 @@ namespace Knapcode.RemindMeWhen.Core.Support
             CloudQueueClient queueClient = storageAccount.CreateCloudQueueClient();
 
             CloudTable documentMetadataTable = tableClient.GetTableReference(azureStorageSettings.DocumentMetadataTableName);
+            documentMetadataTable.DeleteIfExists();
+            documentMetadataTable.CreateIfNotExists();
             Bind<CloudTable>().ToConstant(documentMetadataTable).WhenInjectedIntoDescendentOf(typeof(DocumentStore));
 
             CloudBlobContainer documentBlobContainer = blobClient.GetContainerReference(azureStorageSettings.DocumentBlobContainerName);
+            documentBlobContainer.DeleteIfExists();
+            documentBlobContainer.CreateIfNotExists();
             Bind<CloudBlobContainer>().ToConstant(documentBlobContainer).WhenInjectedIntoDescendentOf(typeof(DocumentStore));
 
             CloudQueue processDocumentQueue = queueClient.GetQueueReference(azureStorageSettings.ProcessDocumentQueueName);
+            processDocumentQueue.DeleteIfExists();
+            processDocumentQueue.CreateIfNotExists();
             Bind<CloudQueue>().ToConstant(processDocumentQueue).WhenInjectedIntoDescendentOf(typeof(RottenTomatoesRepository));
 
             // RottenTomatoesSettings
