@@ -52,13 +52,13 @@ namespace Knapcode.RemindMeWhen.Core.Persistence
             }
         }
 
-        private class GenericTableEntity<TTable> : TableEntity
+        private class GenericTableEntity<TContent> : TableEntity
         {
-            public TTable Content { get; set; }
+            public TContent Content { get; set; }
 
             public override void ReadEntity(IDictionary<string, EntityProperty> properties, OperationContext operationContext)
             {
-                Content = Activator.CreateInstance<TTable>();
+                Content = Activator.CreateInstance<TContent>();
                 ReadUserObject(Content, properties, operationContext);
             }
 
