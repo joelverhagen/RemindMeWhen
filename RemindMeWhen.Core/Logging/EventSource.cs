@@ -89,6 +89,21 @@ namespace Knapcode.RemindMeWhen.Core.Logging
             Log(new {duration});
         }
 
+        public void OnCompletedProcessDocumentDueToMissingDocument(DocumentIdentity documentIdentity)
+        {
+            Log(new {documentIdentity});
+        }
+
+        public void OnCompressed(long decompressedLength, long compressedLength, TimeSpan duration)
+        {
+            Log(new {decompressedLength, compressedLength, duration});
+        }
+
+        public void OnDecompressed(long compressedLength, long decompressedLength, TimeSpan duration)
+        {
+            Log(new {compressedLength, decompressedLength, duration});
+        }
+
         private static void Log(object obj, [CallerMemberName] string callerMemberName = null)
         {
             Trace.WriteLine(JsonConvert.SerializeObject(new {Content = obj, CallerMemberName = callerMemberName}));

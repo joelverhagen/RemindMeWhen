@@ -1,5 +1,4 @@
-﻿using Knapcode.RemindMeWhen.Core.Clients.RottenTomatoes;
-using Knapcode.RemindMeWhen.Core.Extensions;
+﻿using Knapcode.RemindMeWhen.Core.Extensions;
 using Knapcode.RemindMeWhen.Core.Persistence;
 using Knapcode.RemindMeWhen.Core.Repositories;
 using Knapcode.RemindMeWhen.Core.Settings;
@@ -44,7 +43,7 @@ namespace Knapcode.RemindMeWhen.Core.Support
 
             CloudQueue processDocumentQueue = queueClient.GetQueueReference(azureStorageSettings.ProcessDocumentQueueName);
             processDocumentQueue.CreateIfNotExists();
-            Bind<CloudQueue>().ToConstant(processDocumentQueue).WhenInjectedIntoDescendentOf(typeof (RottenTomatoesRepository));
+            Bind<CloudQueue>().ToConstant(processDocumentQueue).WhenInjectedIntoDescendentOf(typeof (RottenTomatoesRepository<>));
         }
     }
 }

@@ -26,5 +26,10 @@ namespace Knapcode.RemindMeWhen.Core.Logging
         void OnQueueMessageDeleted(TimeSpan duration);
         void OnQueueMessageUpdated(TimeSpan duration);
         void OnQueueMessageAdded(TimeSpan duration);
+
+        void OnCompletedProcessDocumentDueToMissingDocument(DocumentIdentity documentIdentity);
+
+        void OnCompressed(long decompressedLength, long compressedLength, TimeSpan duration);
+        void OnDecompressed(long compressedLength, long decompressedLength, TimeSpan duration);
     }
 }

@@ -5,7 +5,7 @@ using Newtonsoft.Json;
 
 namespace Knapcode.RemindMeWhen.Core.Clients.RottenTomatoes
 {
-    public class RottenTomatoesDeserializer : IRottenTomatoesDeserializer
+    public class RottenTomatoesDeserializer : IDeserializer<MovieCollection>
     {
         private static readonly JsonSerializerSettings JsonSerializerSettings;
 
@@ -24,7 +24,7 @@ namespace Knapcode.RemindMeWhen.Core.Clients.RottenTomatoes
             };
         }
 
-        public MovieCollection DeserializeMovieCollection(byte[] content)
+        public MovieCollection Deserialize(byte[] content)
         {
             return Deserialize<MovieCollection>(content);
         }

@@ -65,7 +65,7 @@ namespace Knapcode.RemindMeWhen.Core.Clients.RottenTomatoes
             byte[] documentContent = await response.Content.ReadAsByteArrayAsync();
             return new Document
             {
-                Identity = new DocumentIdentity(DocumentType.RottenTomatoes, typeIdentity),
+                Identity = new DocumentIdentity(DocumentType.RottenTomatoesMovieSearch, typeIdentity),
                 Content = documentContent
             };
         }

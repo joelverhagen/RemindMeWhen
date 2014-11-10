@@ -75,12 +75,12 @@ namespace Knapcode.RemindMeWhen.Core.Queue
             return JsonConvert.SerializeObject(deserializedContent);
         }
 
-        private static QueueMessage<T> Deserialize(CloudQueueMessage cloudQueueMessage)
+        public static QueueMessage<T> Deserialize(CloudQueueMessage cloudQueueMessage)
         {
-            var deserializedContent = JsonConvert.DeserializeObject<T>(cloudQueueMessage.AsString);
+            var content = JsonConvert.DeserializeObject<T>(cloudQueueMessage.AsString);
             return new QueueMessage<T>
             {
-                Content = deserializedContent,
+                Content = content,
                 Id = cloudQueueMessage.Id,
                 PopReceipt = cloudQueueMessage.PopReceipt
             };

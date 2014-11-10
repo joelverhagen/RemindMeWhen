@@ -85,8 +85,12 @@
   <ItemGroup>
     <Compile Include="Clients\DocumentMetadata.cs" />
     <Compile Include="Clients\DocumentType.cs" />
-    <Compile Include="Clients\RottenTomatoes\IRottenTomatoesDeserializer.cs" />
+    <Compile Include="Clients\IEventExtractor.cs" />
+    <Compile Include="Clients\IDeserializer.cs" />
     <Compile Include="Clients\RottenTomatoes\RottenTomatoesDeserializer.cs" />
+    <Compile Include="Clients\RottenTomatoes\RottenTomatoesEventExtractor.cs" />
+    <Compile Include="Compression\GzipCompressor.cs" />
+    <Compile Include="Compression\ICompressor.cs" />
     <Compile Include="Extensions\NinjectExtensions.cs" />
     <Compile Include="Identities\DocumentIdentity.cs">
       <DependentUpon>Identities.tt</DependentUpon>
@@ -103,6 +107,8 @@
     <Compile Include="Identities\IdentityTemplate.cs" />
     <Compile Include="Identities\IdentityMetadata.cs" />
     <Compile Include="Logging\EventSource.cs" />
+    <Compile Include="Models\MovieReleasedToHomeEvent.cs" />
+    <Compile Include="Models\MovieReleasedToTheaterEvent.cs" />
     <Compile Include="Models\PageOffset.cs" />
     <Compile Include="Persistence\AzureBlobClient.cs" />
     <Compile Include="Persistence\AzureTableClient.cs" />
@@ -128,7 +134,6 @@
     <Compile Include="Queue\IQueue.cs" />
     <Compile Include="Queue\IQueueClient.cs" />
     <Compile Include="Queue\ProcessDocument.cs" />
-    <Compile Include="Extensions\ByteArrayExtensions.cs" />
     <Compile Include="Clients\Document.cs" />
     <Compile Include="Queue\QueueMessage.cs" />
     <Compile Include="Queue\AzureQueue.cs" />
@@ -149,8 +154,6 @@
     <Compile Include="Models\IEventWithContent.cs" />
     <Compile Include="Models\IEvent.cs" />
     <Compile Include="Models\MovieReleasedEventContent.cs" />
-    <Compile Include="Models\MovieReleasedToHomeEvent.cs" />
-    <Compile Include="Models\MovieReleasedToTheaterEvent.cs" />
     <Compile Include="Models\Page.cs" />
     <Compile Include="Hashing\IHashAlgorithm.cs" />
     <Compile Include="Persistence\IBlobContainer.cs" />

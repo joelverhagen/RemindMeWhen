@@ -3,9 +3,8 @@ using Knapcode.RemindMeWhen.Core.Models;
 
 namespace Knapcode.RemindMeWhen.Core.Repositories
 {
-    public interface IRottenTomatoesRepository
+    public interface IRottenTomatoesRepository<T> where T : MovieReleasedEvent
     {
-        Task<Page<MovieReleasedToHomeEvent>> SearchMovieReleaseToHomeEventsAsync(string query, PageOffset pageOffset);
-        Task<Page<MovieReleasedToTheaterEvent>> SearchMovieReleaseToTheaterEventsAsync(string query, PageOffset pageOffset);
+        Task<Page<T>> SearchMovieReleaseEventsAsync(string query, PageOffset pageOffset);
     }
 }

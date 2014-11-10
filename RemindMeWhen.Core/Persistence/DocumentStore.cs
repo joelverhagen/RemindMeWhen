@@ -2,6 +2,7 @@
 using System.Text;
 using System.Threading.Tasks;
 using Knapcode.RemindMeWhen.Core.Clients;
+using Knapcode.RemindMeWhen.Core.Compression;
 using Knapcode.RemindMeWhen.Core.Hashing;
 using Knapcode.RemindMeWhen.Core.Identities;
 using Knapcode.RemindMeWhen.Core.Logging;
@@ -11,16 +12,18 @@ namespace Knapcode.RemindMeWhen.Core.Persistence
     public class DocumentStore : IDocumentStore
     {
         private readonly IBlobContainer _blobContainer;
+        private readonly ICompressor _compressor;
         private readonly IEventSource _eventSource;
         private readonly IHashAlgorithm _hashAlgorithm;
         private readonly ITable<DocumentMetadata> _table;
 
-        public DocumentStore(IEventSource eventSource, IHashAlgorithm hashAlgorithm, ITable<DocumentMetadata> table, IBlobContainer blobContainer)
+        public DocumentStore(IEventSource eventSource, IHashAlgorithm hashAlgorithm, ITable<DocumentMetadata> table, IBlobContainer blobContainer, ICompressor compressor)
         {
             _eventSource = eventSource;
             _hashAlgorithm = hashAlgorithm;
             _table = table;
             _blobContainer = blobContainer;
+            _compressor = compressor;
         }
 
         public async Task<DocumentMetadata> GetDocumentMetadataAsync(DocumentIdentity identity)
@@ -43,17 +46,20 @@ namespace Knapcode.RemindMeWhen.Core.Persistence
 
             // get the content
             string documentKey = metadata.Hash;
-            byte[] content = await _blobContainer.GetAsync(documentKey);
-            if (content == null)
+            byte[] compressedContent = await _blobContainer.GetAsync(documentKey);
+            if (compressedContent == null)
             {
                 _eventSource.OnMissingDocumentFromDocumentStore(identity, documentKey);
                 return null;
             }
 
+            // decompress the document
+            byte[] decompressedContent = _compressor.Decompress(compressedContent);
+
             return new Document
             {
                 Identity = identity,
-                Content = content
+                Content = decompressedContent
             };
         }
 
@@ -78,7 +84,10 @@ namespace Knapcode.RemindMeWhen.Core.Persistence
                 return true;
             }
 
-            await _blobContainer.SetAsync(documentKey, document.Content);
+            // compress the document
+            byte[] compressedContent = _compressor.Compress(document.Content);
+
+            await _blobContainer.SetAsync(documentKey, compressedContent);
             return false;
         }
 
