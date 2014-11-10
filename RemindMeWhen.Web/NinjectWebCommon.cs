@@ -2,6 +2,7 @@ using System;
 using System.Configuration;
 using System.Web;
 using Knapcode.RemindMeWhen.Core.Settings;
+using Knapcode.RemindMeWhen.Core.Support;
 using Knapcode.RemindMeWhen.Web;
 using Microsoft.Web.Infrastructure.DynamicModuleHelper;
 using Ninject;
@@ -63,26 +64,7 @@ namespace Knapcode.RemindMeWhen.Web
         /// <param name="kernel">The kernel.</param>
         private static void RegisterServices(IKernel kernel)
         {
-            string rottenTomatoesAppSettingsKey = typeof (RottenTomatoesSettings).FullName + ".Key";
-            string rottenTomatoesKey = ConfigurationManager.AppSettings.Get(rottenTomatoesAppSettingsKey);
-
-            var settings = new RemindMeWhenSettings
-            {
-                AzureStorageSettings = new AzureStorageSettings
-                {
-                    ConnectionString = "UseDevelopmentStorage=true;",
-                    DocumentBlobContainerName = "document",
-                    DocumentMetadataTableName = "documentmetadata",
-                    ProcessDocumentQueueName = "processdocument"
-                },
-                RottenTomatoesSettings = new RottenTomatoesSettings
-                {
-                    Key = rottenTomatoesKey
-                }
-            };
-
-            kernel.Bind<RemindMeWhenSettings>().ToConstant(settings);
-            kernel.Load(typeof (RemindMeWhenSettings).Assembly);
+            kernel.Load<CoreModule>();
         }
     }
 }

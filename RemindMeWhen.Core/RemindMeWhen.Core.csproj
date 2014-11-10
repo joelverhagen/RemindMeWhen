@@ -64,6 +64,7 @@
       <HintPath>..\packages\Ninject.Extensions.Conventions.3.2.0.0\lib\net45-full\Ninject.Extensions.Conventions.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Net.Http.Formatting, Version=5.2.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
@@ -109,6 +110,9 @@
     <Compile Include="Persistence\ITable.cs" />
     <Compile Include="Persistence\ITableClient.cs" />
     <Compile Include="Repositories\IEventSearchRepository.cs" />
+    <Compile Include="Settings\AzureStorageConfiguration.cs" />
+    <Compile Include="Settings\RemindMeWhenConfiguration.cs" />
+    <Compile Include="Settings\RottenTomatoesConfiguration.cs" />
     <Compile Include="Support\Guard.cs" />
     <Compile Include="Support\Reference.cs" />
     <Compile Include="Support\Base64Url.cs" />
@@ -159,7 +163,6 @@
     <Compile Include="Settings\AzureStorageSettings.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="app.config" />
     <None Include="Identities\Identities.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>Identities.cs</LastGenOutput>
@@ -169,6 +172,9 @@
       <LastGenOutput>MultipleOutputHelper1.cs</LastGenOutput>
     </None>
     <None Include="packages.config" />
+    <None Include="RemindMeWhen.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />

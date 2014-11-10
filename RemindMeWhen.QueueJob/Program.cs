@@ -1,10 +1,16 @@
-﻿namespace Knapcode.RemindMeWhen.QueueJob
+﻿using Microsoft.Azure.WebJobs;
+using Ninject;
+
+namespace Knapcode.RemindMeWhen.QueueJob
 {
-    // To learn more about Microsoft Azure WebJobs, please see http://go.microsoft.com/fwlink/?LinkID=401557
-    class Program
+    internal class Program
     {
-        static void Main()
+        private static void Main()
         {
+            IKernel kernel = new StandardKernel();
+            kernel.Load<QueueJobModule>();
+            var jobHost = kernel.Get<JobHost>();
+            jobHost.RunAndBlock();
         }
     }
 }

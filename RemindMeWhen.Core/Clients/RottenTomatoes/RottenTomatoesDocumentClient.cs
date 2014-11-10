@@ -23,13 +23,13 @@ namespace Knapcode.RemindMeWhen.Core.Clients.RottenTomatoes
         {
             Guard.ArgumentNotNull(settings, "settings");
 
-            if (string.IsNullOrWhiteSpace(settings.Key))
+            if (string.IsNullOrWhiteSpace(settings.ApiKey))
             {
                 throw new ArgumentException("The Rotten Tomatoes API key cannot be null or just whitespace.", "settings");
             }
 
             _eventSource = eventSource;
-            _key = settings.Key;
+            _key = settings.ApiKey;
             _httpClient = new HttpClient
             {
                 BaseAddress = new Uri("http://api.rottentomatoes.com/api/public/v1.0/")
