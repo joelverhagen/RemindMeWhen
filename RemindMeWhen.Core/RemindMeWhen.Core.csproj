@@ -83,6 +83,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Clients\Document.cs" />
+    <Compile Include="Clients\DocumentId.cs" />
     <Compile Include="Clients\DocumentMetadata.cs" />
     <Compile Include="Clients\DocumentType.cs" />
     <Compile Include="Clients\IEventExtractor.cs" />
@@ -92,21 +94,9 @@
     <Compile Include="Compression\GzipCompressor.cs" />
     <Compile Include="Compression\ICompressor.cs" />
     <Compile Include="Extensions\NinjectExtensions.cs" />
-    <Compile Include="Identities\DocumentIdentity.cs">
-      <DependentUpon>Identities.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Identities\EventIdentity.cs">
-      <DependentUpon>Identities.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Identities\Identities.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Identities.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Identities\IdentityProperty.cs" />
-    <Compile Include="Identities\IdentityTemplate.cs" />
-    <Compile Include="Identities\IdentityMetadata.cs" />
     <Compile Include="Logging\EventSource.cs" />
+    <Compile Include="Models\EventId.cs" />
+    <Compile Include="Models\Provider.cs" />
     <Compile Include="Models\MovieReleasedToHomeEvent.cs" />
     <Compile Include="Models\MovieReleasedToTheaterEvent.cs" />
     <Compile Include="Models\PageOffset.cs" />
@@ -134,7 +124,6 @@
     <Compile Include="Queue\IQueue.cs" />
     <Compile Include="Queue\IQueueClient.cs" />
     <Compile Include="Queue\ProcessDocument.cs" />
-    <Compile Include="Clients\Document.cs" />
     <Compile Include="Queue\QueueMessage.cs" />
     <Compile Include="Queue\AzureQueue.cs" />
     <Compile Include="Clients\RottenTomatoes\IRottenTomatoesDocumentClient.cs" />
@@ -166,14 +155,6 @@
     <Compile Include="Settings\AzureStorageSettings.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Identities\Identities.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>Identities.cs</LastGenOutput>
-    </None>
-    <None Include="Identities\MultipleOutputHelper.ttinclude">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>MultipleOutputHelper1.cs</LastGenOutput>
-    </None>
     <None Include="packages.config" />
     <None Include="RemindMeWhen.config" />
   </ItemGroup>

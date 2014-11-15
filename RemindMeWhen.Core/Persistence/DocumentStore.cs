@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Text;
 using System.Threading.Tasks;
 using Knapcode.RemindMeWhen.Core.Clients;
 using Knapcode.RemindMeWhen.Core.Compression;
 using Knapcode.RemindMeWhen.Core.Hashing;
-using Knapcode.RemindMeWhen.Core.Identities;
 using Knapcode.RemindMeWhen.Core.Logging;
 
 namespace Knapcode.RemindMeWhen.Core.Persistence
@@ -26,30 +24,28 @@ namespace Knapcode.RemindMeWhen.Core.Persistence
             _compressor = compressor;
         }
 
-        public async Task<DocumentMetadata> GetDocumentMetadataAsync(DocumentIdentity identity)
+        private async Task<DocumentMetadata> GetDocumentMetadataAsync(Guid documentMetadataId)
         {
             // get the metadata
-            string metadataKey = GetMetadataKey(identity);
-            DocumentMetadata metadata = await _table.GetAsync(metadataKey);
+            DocumentMetadata metadata = await _table.GetAsync(documentMetadataId.ToString());
             if (metadata == null)
             {
-                _eventSource.OnMissingDocumentMetadataFromDocumentStore(identity, metadataKey);
+                _eventSource.OnMissingDocumentMetadataFromDocumentStore(documentMetadataId);
                 return null;
             }
 
             return metadata;
         }
 
-        public async Task<Document> GetDocumentAsync(DocumentIdentity identity)
+        public async Task<Document> GetDocumentAsync(Guid documentMetadataId)
         {
-            DocumentMetadata metadata = await GetDocumentMetadataAsync(identity);
+            DocumentMetadata documentMetadata = await GetDocumentMetadataAsync(documentMetadataId);
 
             // get the content
-            string documentKey = metadata.Hash;
-            byte[] compressedContent = await _blobContainer.GetAsync(documentKey);
+            byte[] compressedContent = await _blobContainer.GetAsync(documentMetadata.Hash);
             if (compressedContent == null)
             {
-                _eventSource.OnMissingDocumentFromDocumentStore(identity, documentKey);
+                _eventSource.OnMissingDocumentFromDocumentStore(documentMetadata);
                 return null;
             }
 
@@ -58,42 +54,41 @@ namespace Knapcode.RemindMeWhen.Core.Persistence
 
             return new Document
             {
-                Identity = identity,
+                Id = documentMetadata.DocumentId,
                 Content = decompressedContent
             };
         }
 
-        public async Task<bool> PersistUniqueDocumentAsync(Document document)
+        public async Task<DocumentMetadata> PersistUniqueDocumentAsync(Document document)
         {
-            // save the metadata
-            var metadata = new DocumentMetadata
-            {
-                Identity = document.Identity,
-                Hash = _hashAlgorithm.GetHash(document.Content),
-                LastPersisted = DateTime.UtcNow
-            };
-            string metadataKey = GetMetadataKey(document.Identity);
-            await _table.SetAsync(metadataKey, metadata);
-
             // save the content if it doesn't already exist
-            string documentKey = metadata.Hash;
-            if (await _blobContainer.ExistsAsync(documentKey))
+            string documentHash = _hashAlgorithm.GetHash(document.Content);
+            bool duplicate = await _blobContainer.ExistsAsync(documentHash);
+            if (duplicate)
             {
-                _eventSource.OnDuplicateFoundInDocumentStore(document.Identity, documentKey);
-                return true;
+                _eventSource.OnDuplicateFoundInDocumentStore(document.Id, documentHash);
+            }
+            else
+            {
+                // compress the document
+                byte[] compressedContent = _compressor.Compress(document.Content);
+                await _blobContainer.SetAsync(documentHash, compressedContent);
             }
 
-            // compress the document
-            byte[] compressedContent = _compressor.Compress(document.Content);
+            // save the metadata
+            Guid documentMetadataId = Guid.NewGuid();
+            var documentMetadata = new DocumentMetadata
+            {
+                Id = documentMetadataId,
+                DocumentId = document.Id,
+                Hash = documentHash,
+                Duplicate = duplicate,
+                Created = DateTime.UtcNow
+            };
 
-            await _blobContainer.SetAsync(documentKey, compressedContent);
-            return false;
-        }
+            await _table.SetAsync(documentMetadataId.ToString(), documentMetadata);
 
-        private string GetMetadataKey(DocumentIdentity identity)
-        {
-            byte[] buffer = Encoding.UTF8.GetBytes(identity.ToString());
-            return _hashAlgorithm.GetHash(buffer);
+            return documentMetadata;
         }
     }
 }

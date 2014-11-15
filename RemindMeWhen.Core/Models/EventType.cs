@@ -2,8 +2,7 @@
 {
     public enum EventType
     {
-        None = 0,
-        MovieReleasedToTheater = 1,
-        MovieReleasedToHome = 2
+        MovieReleasedToTheater = 0,
+        MovieReleasedToHome = 1
     }
 }

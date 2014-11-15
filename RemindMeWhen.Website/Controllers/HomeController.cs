@@ -28,7 +28,7 @@ namespace Knapcode.RemindMeWhen.Website.Controllers
                 {
                     EventType = eventType,
                     Query = query,
-                    EventTypes = Enum.GetValues(typeof (EventType)).Cast<EventType>().Where(t => t != EventType.None)
+                    EventTypes = Enum.GetValues(typeof (EventType)).Cast<EventType>()
                 }
             };
 

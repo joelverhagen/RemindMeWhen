@@ -5,7 +5,6 @@ using System.Globalization;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web;
-using Knapcode.RemindMeWhen.Core.Identities;
 using Knapcode.RemindMeWhen.Core.Logging;
 using Knapcode.RemindMeWhen.Core.Models;
 using Knapcode.RemindMeWhen.Core.Settings;
@@ -61,12 +60,16 @@ namespace Knapcode.RemindMeWhen.Core.Clients.RottenTomatoes
         {
             response.EnsureSuccessStatusCode();
 
-            string typeIdentity = response.RequestMessage.RequestUri.ToString().Replace(_key, "key");
-            byte[] documentContent = await response.Content.ReadAsByteArrayAsync();
+            string typeId = response.RequestMessage.RequestUri.ToString().Replace(_key, "key");
+            byte[] content = await response.Content.ReadAsByteArrayAsync();
             return new Document
             {
-                Identity = new DocumentIdentity(DocumentType.RottenTomatoesMovieSearch, typeIdentity),
-                Content = documentContent
+                Id = new DocumentId
+                {
+                    Type = DocumentType.RottenTomatoesApiMovieSearch,
+                    TypeId = typeId
+                },
+                Content = content
             };
         }
 

@@ -29,12 +29,12 @@ namespace Knapcode.RemindMeWhen.Core.Repositories
             Document document = await _externalDocumentClient.SearchMoviesAsync(query, pageOffset);
 
             // persist the document
-            bool isDuplicate = await _documentStore.PersistUniqueDocumentAsync(document);
+            DocumentMetadata documentMetadata = await _documentStore.PersistUniqueDocumentAsync(document);
 
             // enqueue the process queue message if the document is new
-            if (!isDuplicate)
+            if (!documentMetadata.Duplicate)
             {
-                await _queue.AddMessageAsync(new ProcessDocument {DocumentIdentity = document.Identity});
+                await _queue.AddMessageAsync(new ProcessDocument {DocumentMetadata = documentMetadata});
             }
 
             // extract the events

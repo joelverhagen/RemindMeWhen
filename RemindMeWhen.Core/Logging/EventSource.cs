@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
-using Knapcode.RemindMeWhen.Core.Identities;
+using Knapcode.RemindMeWhen.Core.Clients;
 using Knapcode.RemindMeWhen.Core.Models;
+using Knapcode.RemindMeWhen.Core.Queue;
 using Newtonsoft.Json;
 
 namespace Knapcode.RemindMeWhen.Core.Logging
@@ -49,19 +50,19 @@ namespace Knapcode.RemindMeWhen.Core.Logging
             Log(new {key, exists, duration});
         }
 
-        public void OnMissingDocumentMetadataFromDocumentStore(DocumentIdentity identity, string metadataKey)
+        public void OnMissingDocumentMetadataFromDocumentStore(Guid documentMetadataId)
         {
-            Log(new {identity, metadataKey});
+            Log(new {documentMetadataId});
         }
 
-        public void OnMissingDocumentFromDocumentStore(DocumentIdentity identity, string documentKey)
+        public void OnMissingDocumentFromDocumentStore(DocumentMetadata documentMetadata)
         {
-            Log(new {identity, documentKey});
+            Log(new {documentMetadata});
         }
 
-        public void OnDuplicateFoundInDocumentStore(DocumentIdentity identity, string documentKey)
+        public void OnDuplicateFoundInDocumentStore(DocumentId documentId, string documentHash)
         {
-            Log(new {identity, documentKey});
+            Log(new {documentId, documentHash});
         }
 
         public void OnQueueMessagePeeked(TimeSpan duration)
@@ -89,11 +90,6 @@ namespace Knapcode.RemindMeWhen.Core.Logging
             Log(new {duration});
         }
 
-        public void OnCompletedProcessDocumentDueToMissingDocument(DocumentIdentity documentIdentity)
-        {
-            Log(new {documentIdentity});
-        }
-
         public void OnCompressed(long decompressedLength, long compressedLength, TimeSpan duration)
         {
             Log(new {decompressedLength, compressedLength, duration});
@@ -102,6 +98,11 @@ namespace Knapcode.RemindMeWhen.Core.Logging
         public void OnDecompressed(long compressedLength, long decompressedLength, TimeSpan duration)
         {
             Log(new {compressedLength, decompressedLength, duration});
+        }
+
+        public void OnCompletedProcessDocumentDueToMissingDocument(QueueMessage<ProcessDocument> queueMessage)
+        {
+            Log(new {queueMessage});
         }
 
         private static void Log(object obj, [CallerMemberName] string callerMemberName = null)

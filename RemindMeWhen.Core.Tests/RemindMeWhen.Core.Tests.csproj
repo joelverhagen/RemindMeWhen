@@ -67,11 +67,9 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
-    <Compile Include="Identities\EventIdentityTests.cs" />
     <Compile Include="Settings\RemindMeWhenConfigurationTests.cs" />
     <Compile Include="Support\Base64UrlTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Identities\IdentityMetadataTests.cs" />
     <Compile Include="TestSupport\StringInjectExtension.cs" />
   </ItemGroup>
   <ItemGroup>

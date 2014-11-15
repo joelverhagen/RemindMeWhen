@@ -22,10 +22,10 @@ namespace Knapcode.RemindMeWhen.QueueJob
 
         public async Task ExecuteAsync(QueueMessage<ProcessDocument> queueMessage)
         {
-            Document document = await _documentStore.GetDocumentAsync(queueMessage.Content.DocumentIdentity);
+            Document document = await _documentStore.GetDocumentAsync(queueMessage.Content.DocumentMetadata.Id);
             if (document == null)
             {
-                _eventSource.OnCompletedProcessDocumentDueToMissingDocument(queueMessage.Content.DocumentIdentity);
+                _eventSource.OnCompletedProcessDocumentDueToMissingDocument(queueMessage);
                 return;
             }
 

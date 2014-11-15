@@ -1,9 +1,9 @@
-﻿using Knapcode.RemindMeWhen.Core.Identities;
+﻿using Knapcode.RemindMeWhen.Core.Clients;
 
 namespace Knapcode.RemindMeWhen.Core.Queue
 {
     public class ProcessDocument
     {
-        public DocumentIdentity DocumentIdentity { get; set; }
+        public DocumentMetadata DocumentMetadata { get; set; }
     }
 }

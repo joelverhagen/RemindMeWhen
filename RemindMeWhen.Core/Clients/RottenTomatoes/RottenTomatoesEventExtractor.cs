@@ -3,15 +3,12 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using Knapcode.RemindMeWhen.Core.Clients.RottenTomatoes.Models;
-using Knapcode.RemindMeWhen.Core.Identities;
 using Knapcode.RemindMeWhen.Core.Models;
 
 namespace Knapcode.RemindMeWhen.Core.Clients.RottenTomatoes
 {
     public class RottenTomatoesEventExtractor : IEventExtractor<byte[], MovieReleasedToTheaterEvent>, IEventExtractor<byte[], MovieReleasedToHomeEvent>, IEventExtractor<byte[], MovieReleasedEvent>
     {
-        private const string Source = "api.rottentomatoes.com";
-
         private static readonly IDictionary<Type, Tuple<EventType, Func<ReleaseDates, DateTime?>>> EventTypeMap = new Dictionary<Type, Tuple<EventType, Func<ReleaseDates, DateTime?>>>
         {
             {
@@ -130,7 +127,12 @@ namespace Knapcode.RemindMeWhen.Core.Clients.RottenTomatoes
             var e = Activator.CreateInstance<T>();
             e.Content = content;
             e.DateTime = dateTime;
-            e.Identity = new EventIdentity(eventType, Source, movie.Id);
+            e.Id = new EventId
+            {
+                ProviderId = ProviderId.RottenTomatoesApi,
+                Type = eventType,
+                ResourceId = movie.Id
+            };
             return e;
         }
     }
