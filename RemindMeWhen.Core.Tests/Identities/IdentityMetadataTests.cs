@@ -2,10 +2,9 @@
 using System.IO;
 using FluentAssertions;
 using Knapcode.RemindMeWhen.Core.Identities;
-using Knapcode.RemindMeWhen.Core.Support;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Knapcode.RemindMeWhen.Core.Tests.Support
+namespace Knapcode.RemindMeWhen.Core.Tests.Identities
 {
     [TestClass]
     public class IdentityMetadataTests

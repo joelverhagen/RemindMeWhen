@@ -68,8 +68,7 @@ namespace Knapcode.RemindMeWhen.Core.Persistence
             // save the metadata
             var metadata = new DocumentMetadata
             {
-                Type = document.Identity.Type,
-                TypeIdentity = document.Identity.TypeIdentity,
+                Identity = document.Identity,
                 Hash = _hashAlgorithm.GetHash(document.Content),
                 LastPersisted = DateTime.UtcNow
             };
