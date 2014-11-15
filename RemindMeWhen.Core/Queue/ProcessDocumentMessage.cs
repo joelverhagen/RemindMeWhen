@@ -2,7 +2,7 @@
 
 namespace Knapcode.RemindMeWhen.Core.Queue
 {
-    public class ProcessDocument
+    public class ProcessDocumentMessage
     {
         public DocumentMetadata DocumentMetadata { get; set; }
     }

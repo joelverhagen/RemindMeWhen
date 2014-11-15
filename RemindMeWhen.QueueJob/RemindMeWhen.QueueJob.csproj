@@ -84,7 +84,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="NameResolver.cs" />
-    <Compile Include="ProcessDocumentQueueJob.cs" />
+    <Compile Include="ProcessDocumentJob.cs" />
     <Compile Include="ProcessDocumentQueueJobExecutor.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

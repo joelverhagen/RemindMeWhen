@@ -100,9 +100,9 @@ namespace Knapcode.RemindMeWhen.Core.Logging
             Log(new {compressedLength, decompressedLength, duration});
         }
 
-        public void OnCompletedProcessDocumentDueToMissingDocument(QueueMessage<ProcessDocument> queueMessage)
+        public void OnCompletedProcessDocumentJobDueToMissingDocument(ProcessDocumentMessage processDocumentMessage)
         {
-            Log(new {queueMessage});
+            Log(new { processDocumentMessage });
         }
 
         private static void Log(object obj, [CallerMemberName] string callerMemberName = null)

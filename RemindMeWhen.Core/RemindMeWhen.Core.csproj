@@ -105,6 +105,7 @@
     <Compile Include="Persistence\IBlobClient.cs" />
     <Compile Include="Persistence\ITable.cs" />
     <Compile Include="Persistence\ITableClient.cs" />
+    <Compile Include="Queue\ProcessDocumentMessage.cs" />
     <Compile Include="Repositories\IEventSearchRepository.cs" />
     <Compile Include="Settings\AzureStorageConfiguration.cs" />
     <Compile Include="Settings\RemindMeWhenConfiguration.cs" />
@@ -123,7 +124,6 @@
     <Compile Include="Queue\AzureQueueClient.cs" />
     <Compile Include="Queue\IQueue.cs" />
     <Compile Include="Queue\IQueueClient.cs" />
-    <Compile Include="Queue\ProcessDocument.cs" />
     <Compile Include="Queue\QueueMessage.cs" />
     <Compile Include="Queue\AzureQueue.cs" />
     <Compile Include="Clients\RottenTomatoes\IRottenTomatoesDocumentClient.cs" />

@@ -13,9 +13,9 @@ namespace Knapcode.RemindMeWhen.Core.Repositories
         private readonly IDocumentStore _documentStore;
         private readonly IEventExtractor<byte[], T> _eventExtractor;
         private readonly IRottenTomatoesDocumentClient _externalDocumentClient;
-        private readonly IQueue<ProcessDocument> _queue;
+        private readonly IQueue<ProcessDocumentMessage> _queue;
 
-        public RottenTomatoesRepository(IRottenTomatoesDocumentClient externalDocumentClient, IDocumentStore documentStore, IQueue<ProcessDocument> queue, IEventExtractor<byte[], T> eventExtractor)
+        public RottenTomatoesRepository(IRottenTomatoesDocumentClient externalDocumentClient, IDocumentStore documentStore, IQueue<ProcessDocumentMessage> queue, IEventExtractor<byte[], T> eventExtractor)
         {
             _externalDocumentClient = externalDocumentClient;
             _documentStore = documentStore;
@@ -34,7 +34,7 @@ namespace Knapcode.RemindMeWhen.Core.Repositories
             // enqueue the process queue message if the document is new
             if (!documentMetadata.Duplicate)
             {
-                await _queue.AddMessageAsync(new ProcessDocument {DocumentMetadata = documentMetadata});
+                await _queue.AddMessageAsync(new ProcessDocumentMessage {DocumentMetadata = documentMetadata});
             }
 
             // extract the events

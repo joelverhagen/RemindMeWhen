@@ -31,6 +31,6 @@ namespace Knapcode.RemindMeWhen.Core.Logging
         void OnCompressed(long decompressedLength, long compressedLength, TimeSpan duration);
         void OnDecompressed(long compressedLength, long decompressedLength, TimeSpan duration);
 
-        void OnCompletedProcessDocumentDueToMissingDocument(QueueMessage<ProcessDocument> queueMessage);
+        void OnCompletedProcessDocumentJobDueToMissingDocument(ProcessDocumentMessage processDocumentMessage);
     }
 }
