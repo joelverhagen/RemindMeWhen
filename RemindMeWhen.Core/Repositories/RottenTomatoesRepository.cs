@@ -49,7 +49,7 @@ namespace Knapcode.RemindMeWhen.Core.Repositories
                 document = await _externalDocumentClient.GetDocumentAsync(documentId);
 
                 // persist the document
-                DocumentMetadata documentMetadata = await _documentStore.PersistUniqueDocumentAsync(document);
+                DocumentMetadata documentMetadata = await _documentStore.SaveDocumentAsync(document);
 
                 // enqueue the process queue message if the document is new
                 if (!documentMetadata.Duplicate)

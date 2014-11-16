@@ -28,6 +28,6 @@ namespace Knapcode.RemindMeWhen.Core.Persistence
         /// </summary>
         /// <param name="document">The document.</param>
         /// <returns>A value indicating whether the provided document is a duplicate.</returns>
-        Task<DocumentMetadata> PersistUniqueDocumentAsync(Document document);
+        Task<DocumentMetadata> SaveDocumentAsync(Document document);
     }
 }
