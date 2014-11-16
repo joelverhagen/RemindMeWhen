@@ -97,7 +97,9 @@ namespace Knapcode.RemindMeWhen.Core.Clients.RottenTomatoes
 
             var builder = new UriBuilder
             {
-                Path = "http://api.rottentomatoes.com/api/public/v1.0/" + path,
+                Scheme = "http",
+                Host = "api.rottentomatoes.com",
+                Path = "/api/public/v1.0/" + path,
                 Query = queryString.ToString()
             };
 
