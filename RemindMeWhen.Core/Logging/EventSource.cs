@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Net;
-using System.Net.Http;
 using System.Runtime.CompilerServices;
 using Knapcode.RemindMeWhen.Core.Clients;
 using Knapcode.RemindMeWhen.Core.Queue;
@@ -109,6 +108,11 @@ namespace Knapcode.RemindMeWhen.Core.Logging
         public void OnCompletedProcessDocumentJobDueToMissingDocument(ProcessDocumentMessage processDocumentMessage)
         {
             Log(new {processDocumentMessage});
+        }
+
+        public void OnMissingSubscriptionFromSubscriptionStore(Guid userId, string uniqueId)
+        {
+            Log(new {userId, uniqueId});
         }
 
         private static void Log(object obj, [CallerMemberName] string callerMemberName = null)

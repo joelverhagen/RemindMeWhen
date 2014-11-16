@@ -33,5 +33,7 @@ namespace Knapcode.RemindMeWhen.Core.Logging
         void OnDecompressed(long compressedLength, long decompressedLength, TimeSpan duration);
 
         void OnCompletedProcessDocumentJobDueToMissingDocument(ProcessDocumentMessage processDocumentMessage);
+
+        void OnMissingSubscriptionFromSubscriptionStore(Guid userId, string uniqueId);
     }
 }

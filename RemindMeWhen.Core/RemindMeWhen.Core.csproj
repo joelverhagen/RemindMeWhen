@@ -103,6 +103,9 @@
     <Compile Include="Models\PageOffset.cs" />
     <Compile Include="Persistence\AzureBlobClient.cs" />
     <Compile Include="Persistence\AzureTableClient.cs" />
+    <Compile Include="Models\Subscription.cs" />
+    <Compile Include="Models\SubscriptionId.cs" />
+    <Compile Include="Persistence\SubscriptionStore.cs" />
     <Compile Include="Persistence\IBlobClient.cs" />
     <Compile Include="Persistence\ITable.cs" />
     <Compile Include="Persistence\ITableClient.cs" />
