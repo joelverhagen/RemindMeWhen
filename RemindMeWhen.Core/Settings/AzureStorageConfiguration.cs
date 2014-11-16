@@ -33,5 +33,11 @@ namespace Knapcode.RemindMeWhen.Core.Settings
         {
             get { return (string) this["subscriptionTableName"]; }
         }
+
+        [ConfigurationProperty("saveSubscriptionQueueName")]
+        public string SaveSubscriptionQueueName
+        {
+            get { return (string) this["saveSubscriptionQueueName"]; }
+        }
     }
 }

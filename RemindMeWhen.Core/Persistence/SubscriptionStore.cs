@@ -45,7 +45,7 @@ namespace Knapcode.RemindMeWhen.Core.Persistence
             return await _table.ListAsync(GetQueryByEventPartitionKey(eventId), null, null);
         }
 
-        public async Task<Subscription> SaveSubscriptionAsync(EventId eventId, Guid userId)
+        public async Task<Subscription> SaveSubscriptionAsync(Guid userId, EventId eventId)
         {
             // create the subscription
             DateTime created = DateTime.UtcNow;

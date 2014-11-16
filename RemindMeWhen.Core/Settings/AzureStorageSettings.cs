@@ -7,5 +7,6 @@
         public string DocumentBlobContainerName { get; set; }
         public string ProcessDocumentQueueName { get; set; }
         public string SubscriptionTableName { get; set; }
+        public string SaveSubscriptionQueueName { get; set; }
     }
 }

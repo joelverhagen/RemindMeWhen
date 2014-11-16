@@ -32,9 +32,9 @@ namespace Knapcode.RemindMeWhen.Core.Persistence
         /// <summary>
         /// Save a new subscription for the provided event ID and user ID.
         /// </summary>
-        /// <param name="eventId">The event ID.</param>
         /// <param name="userId">The user ID.</param>
+        /// <param name="eventId">The event ID.</param>
         /// <returns>The new subscription.</returns>
-        Task<Subscription> SaveSubscriptionAsync(EventId eventId, Guid userId);
+        Task<Subscription> SaveSubscriptionAsync(Guid userId, EventId eventId);
     }
 }
