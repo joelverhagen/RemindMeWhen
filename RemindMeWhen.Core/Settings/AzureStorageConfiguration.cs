@@ -27,5 +27,11 @@ namespace Knapcode.RemindMeWhen.Core.Settings
         {
             get { return (string) this["processDocumentQueueName"]; }
         }
+
+        [ConfigurationProperty("subscriptionTableName")]
+        public string SubscriptionTableName
+        {
+            get { return (string) this["subscriptionTableName"]; }
+        }
     }
 }

@@ -43,7 +43,8 @@ namespace Knapcode.RemindMeWhen.Core.Settings
                     ProcessDocumentQueueName = AzureStorage.ProcessDocumentQueueName,
                     ConnectionString = AzureStorage.ConnectionString,
                     DocumentBlobContainerName = AzureStorage.DocumentBlobContainerName,
-                    DocumentMetadataTableName = AzureStorage.DocumentMetadataTableName
+                    DocumentMetadataTableName = AzureStorage.DocumentMetadataTableName,
+                    SubscriptionTableName = AzureStorage.SubscriptionTableName
                 },
                 RottenTomatoes = new RottenTomatoesSettings
                 {

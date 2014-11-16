@@ -44,6 +44,10 @@ namespace Knapcode.RemindMeWhen.Core.Support
             CloudQueue processDocumentQueue = queueClient.GetQueueReference(azureStorageSettings.ProcessDocumentQueueName);
             processDocumentQueue.CreateIfNotExists();
             Bind<CloudQueue>().ToConstant(processDocumentQueue).WhenInjectedIntoDescendentOf(typeof (RottenTomatoesRepository<>));
+
+            CloudQueue subscriptionTable = queueClient.GetQueueReference(azureStorageSettings.SubscriptionTableName);
+            subscriptionTable.CreateIfNotExists();
+            Bind<CloudQueue>().ToConstant(subscriptionTable).WhenInjectedIntoDescendentOf(typeof (SubscriptionStore));
         }
     }
 }
