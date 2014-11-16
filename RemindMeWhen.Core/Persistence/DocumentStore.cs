@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Text;
 using System.Threading.Tasks;
 using Knapcode.RemindMeWhen.Core.Clients;
 using Knapcode.RemindMeWhen.Core.Compression;
@@ -28,7 +29,7 @@ namespace Knapcode.RemindMeWhen.Core.Persistence
 
         public async Task<IEnumerable<DocumentMetadata>> ListDocumentMetadataAsync(DocumentId documentId, DateTime dateTime)
         {
-            return await _table.ListAsync(GetDocumentMetadataPartitionKey(documentId), GetRowKeyPrefixForDateTime(dateTime), null);
+            return await _table.ListAsync(GetDocumentMetadataPartitionKey(documentId), null, GetRowKeyPrefixForDateTime(dateTime));
         }
 
         public async Task<Document> GetDocumentAsync(DocumentId documentId, string documentMetadataId)
@@ -105,16 +106,12 @@ namespace Knapcode.RemindMeWhen.Core.Persistence
 
         private static string GetRowKeyPrefixForDateTime(DateTime dateTime)
         {
-            return (DateTime.MaxValue.Ticks - DateTime.UtcNow.Ticks).ToString("D19");
+            return (DateTime.MaxValue.Ticks - dateTime.Ticks).ToString("D19");
         }
 
-        private static string GetDocumentMetadataPartitionKey(DocumentId documentId)
+        private string GetDocumentMetadataPartitionKey(DocumentId documentId)
         {
-            return string.Format(
-                CultureInfo.InvariantCulture,
-                "{0}-{1}",
-                documentId.Type,
-                documentId.TypeId);
+            return _hashAlgorithm.GetHash(Encoding.UTF8.GetBytes(documentId.TypeId));
         }
     }
 }
