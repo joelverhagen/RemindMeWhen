@@ -111,7 +111,6 @@
     <Compile Include="Settings\RemindMeWhenConfiguration.cs" />
     <Compile Include="Settings\RottenTomatoesConfiguration.cs" />
     <Compile Include="Support\Guard.cs" />
-    <Compile Include="Support\Reference.cs" />
     <Compile Include="Support\Base64Url.cs" />
     <Compile Include="Logging\EventTimer.cs" />
     <Compile Include="Logging\IEventSource.cs" />

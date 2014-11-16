@@ -1,7 +1,7 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.IO.Compression;
 using Knapcode.RemindMeWhen.Core.Logging;
-using Knapcode.RemindMeWhen.Core.Support;
 
 namespace Knapcode.RemindMeWhen.Core.Compression
 {
@@ -16,35 +16,41 @@ namespace Knapcode.RemindMeWhen.Core.Compression
 
         public byte[] Compress(byte[] decompressed)
         {
-            var compressedLength = new Reference<long>();
-            using (EventTimer.OnCompletion(d => _eventSource.OnCompressed(decompressed.LongLength, compressedLength.Value, d)))
+            byte[] compressed = null;
+
+            TimeSpan duration = EventTimer.Time(() =>
             {
                 var outputStream = new MemoryStream();
                 using (var compressStream = new GZipStream(outputStream, CompressionMode.Compress))
                 {
                     compressStream.Write(decompressed, 0, decompressed.Length);
                 }
-                byte[] compressed = outputStream.ToArray();
-                compressedLength.Value = compressed.LongLength;
-                return compressed;
-            }
+                compressed = outputStream.ToArray();
+            });
+
+            _eventSource.OnCompressed(decompressed.LongLength, compressed.LongLength, duration);
+
+            return compressed;
         }
 
         public byte[] Decompress(byte[] compressed)
         {
-            var decompressedLength = new Reference<long>();
-            using (EventTimer.OnCompletion(d => _eventSource.OnDecompressed(compressed.LongLength, decompressedLength.Value, d)))
+            byte[] decompressed = null;
+
+            TimeSpan duration = EventTimer.Time(() =>
             {
                 var compressedStream = new MemoryStream(compressed);
                 using (var decompressStream = new GZipStream(compressedStream, CompressionMode.Decompress))
                 {
                     var outputStream = new MemoryStream();
                     decompressStream.CopyTo(outputStream);
-                    byte[] decompressed = outputStream.ToArray();
-                    decompressedLength.Value = decompressed.LongLength;
-                    return decompressed;
+                    decompressed = outputStream.ToArray();
                 }
-            }
+            });
+
+            _eventSource.OnDecompressed(compressed.LongLength, decompressed.LongLength, duration);
+
+            return decompressed;
         }
     }
 }

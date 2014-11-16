@@ -26,7 +26,8 @@ namespace Knapcode.RemindMeWhen.Core.Repositories
         public async Task<Page<T>> SearchMovieReleaseEventsAsync(string query, PageOffset pageOffset)
         {
             // query Rotten Tomatoes API
-            Document document = await _externalDocumentClient.SearchMoviesAsync(query, pageOffset);
+            DocumentId documentId = _externalDocumentClient.SearchMovies(query, pageOffset);
+            Document document = await _externalDocumentClient.GetDocumentAsync(documentId);
 
             // persist the document
             DocumentMetadata documentMetadata = await _documentStore.PersistUniqueDocumentAsync(document);

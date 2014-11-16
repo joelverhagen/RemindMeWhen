@@ -31,7 +31,7 @@ namespace Knapcode.RemindMeWhen.QueueJob
                 throw new ArgumentException("The process document message should not have null metadata.");
             }
 
-            Document document = await _documentStore.GetDocumentAsync(processDocumentMessage.DocumentMetadata.Id);
+            Document document = await _documentStore.GetDocumentAsync(processDocumentMessage.DocumentMetadata.DocumentId, processDocumentMessage.DocumentMetadata.Id);
             if (document == null)
             {
                 _eventSource.OnCompletedProcessDocumentJobDueToMissingDocument(processDocumentMessage);

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Threading.Tasks;
 
 namespace Knapcode.RemindMeWhen.Core.Logging
 {
@@ -21,9 +22,29 @@ namespace Knapcode.RemindMeWhen.Core.Logging
             _onCompletion(_stopwatch.Elapsed);
         }
 
-        public static EventTimer OnCompletion(Action<TimeSpan> onCompletion)
+        private static EventTimer Enter(Action<TimeSpan> onCompletion)
         {
             return new EventTimer(onCompletion);
+        }
+
+        public static TimeSpan Time(Action action)
+        {
+            TimeSpan timeSpan = TimeSpan.Zero;
+            using (Enter(d => timeSpan = d))
+            {
+                action();
+            }
+            return timeSpan;
+        }
+
+        public static async Task<TimeSpan> TimeAsync(Func<Task> actionAsync)
+        {
+            TimeSpan timeSpan = TimeSpan.Zero;
+            using (Enter(d => timeSpan = d))
+            {
+                await actionAsync();
+            }
+            return timeSpan;
         }
     }
 }

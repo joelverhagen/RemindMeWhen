@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Knapcode.RemindMeWhen.Core.Logging;
 using Microsoft.WindowsAzure.Storage;
@@ -18,38 +20,72 @@ namespace Knapcode.RemindMeWhen.Core.Persistence
             _cloudTable = cloudTable;
         }
 
-        public async Task<T> GetAsync(string key)
+        public async Task<T> GetAsync(string partitionKey, string rowKey)
         {
-            TableOperation operation = TableOperation.Retrieve<GenericTableEntity<T>>(key, key);
-            TableResult tableResult;
-            using (EventTimer.OnCompletion(d => _eventSource.OnFetchedKeyValueFromAzure(key, d)))
+            TableOperation operation = TableOperation.Retrieve<GenericTableEntity<T>>(partitionKey, rowKey);
+            TableResult tableResult = null;
+            TimeSpan duration = await EventTimer.TimeAsync(async () =>
             {
                 tableResult = await _cloudTable.ExecuteAsync(operation);
-            }
+            });
+            _eventSource.OnFetchedRecordFromAzure(partitionKey, rowKey, duration);
 
             var record = tableResult.Result as GenericTableEntity<T>;
             if (record == null)
             {
-                _eventSource.OnMissingKeyValueFromAzure(key);
+                _eventSource.OnMissingRecordFromAzure(partitionKey, rowKey);
                 return default(T);
             }
 
             return record.Content;
         }
 
-        public async Task SetAsync(string key, T value)
+        public async Task<IEnumerable<T>> ListAsync(string partitionKey, string rowKeyLowerBound, string rowKeyUpperBound)
+        {
+
+            string condition = TableQuery.GenerateFilterCondition("PartitionKey", QueryComparisons.Equal, partitionKey);
+            if (rowKeyLowerBound != null)
+            {
+                condition = TableQuery.CombineFilters(
+                    condition,
+                    TableOperators.And,
+                    TableQuery.GenerateFilterCondition("RowKey", QueryComparisons.GreaterThanOrEqual, rowKeyLowerBound));
+            }
+
+            if (rowKeyUpperBound != null)
+            {
+                condition = TableQuery.CombineFilters(
+                    condition,
+                    TableOperators.And,
+                    TableQuery.GenerateFilterCondition("RowKey", QueryComparisons.LessThanOrEqual, rowKeyUpperBound));
+            }
+            
+            TableQuery<GenericTableEntity<T>> query = new TableQuery<GenericTableEntity<T>>().Where(condition);
+
+            TableQuerySegment<GenericTableEntity<T>> result = null;
+            TimeSpan duration = await EventTimer.TimeAsync(async () =>
+            {
+                result = await _cloudTable.ExecuteQuerySegmentedAsync(query, null);
+            });
+            _eventSource.OnFetchedListFromAzure(partitionKey, result.Results.Count, duration);
+
+            return result.Results.Select(r => r.Content);
+        }
+
+        public async Task SetAsync(string partitionKey, string rowKey, T value)
         {
             var entity = new GenericTableEntity<T>
             {
-                PartitionKey = key,
-                RowKey = key,
+                PartitionKey = partitionKey,
+                RowKey = rowKey,
                 Content = value
             };
             TableOperation operation = TableOperation.InsertOrReplace(entity);
-            using (EventTimer.OnCompletion(d => _eventSource.OnSavedKeyValueToAzure(key, d)))
+            TimeSpan duration = await EventTimer.TimeAsync(async () =>
             {
                 await _cloudTable.ExecuteAsync(operation);
-            }
+            });
+            _eventSource.OnSavedRecordToAzure(partitionKey, rowKey, duration);
         }
 
         private class GenericTableEntity<TContent> : TableEntity

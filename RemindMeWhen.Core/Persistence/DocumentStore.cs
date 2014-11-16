@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Globalization;
 using System.Threading.Tasks;
 using Knapcode.RemindMeWhen.Core.Clients;
 using Knapcode.RemindMeWhen.Core.Compression;
@@ -24,22 +26,14 @@ namespace Knapcode.RemindMeWhen.Core.Persistence
             _compressor = compressor;
         }
 
-        private async Task<DocumentMetadata> GetDocumentMetadataAsync(Guid documentMetadataId)
+        public async Task<IEnumerable<DocumentMetadata>> ListDocumentMetadataAsync(DocumentId documentId, DateTime dateTime)
         {
-            // get the metadata
-            DocumentMetadata metadata = await _table.GetAsync(documentMetadataId.ToString());
-            if (metadata == null)
-            {
-                _eventSource.OnMissingDocumentMetadataFromDocumentStore(documentMetadataId);
-                return null;
-            }
-
-            return metadata;
+            return await _table.ListAsync(GetDocumentMetadataPartitionKey(documentId), GetRowKeyPrefixForDateTime(dateTime), null);
         }
 
-        public async Task<Document> GetDocumentAsync(Guid documentMetadataId)
+        public async Task<Document> GetDocumentAsync(DocumentId documentId, string documentMetadataId)
         {
-            DocumentMetadata documentMetadata = await GetDocumentMetadataAsync(documentMetadataId);
+            DocumentMetadata documentMetadata = await GetDocumentMetadataAsync(documentId, documentMetadataId);
 
             // get the content
             byte[] compressedContent = await _blobContainer.GetAsync(documentMetadata.Hash);
@@ -75,8 +69,13 @@ namespace Knapcode.RemindMeWhen.Core.Persistence
                 await _blobContainer.SetAsync(documentHash, compressedContent);
             }
 
-            // save the metadata
-            Guid documentMetadataId = Guid.NewGuid();
+            // save the metadata, in reverse chronological order
+            string documentMetadataId = string.Format(
+                CultureInfo.InvariantCulture,
+                "{0}-{1}",
+                GetRowKeyPrefixForDateTime(DateTime.UtcNow),
+                Guid.NewGuid());
+
             var documentMetadata = new DocumentMetadata
             {
                 Id = documentMetadataId,
@@ -86,9 +85,36 @@ namespace Knapcode.RemindMeWhen.Core.Persistence
                 Created = DateTime.UtcNow
             };
 
-            await _table.SetAsync(documentMetadataId.ToString(), documentMetadata);
+            await _table.SetAsync(GetDocumentMetadataPartitionKey(document.Id), documentMetadataId, documentMetadata);
 
             return documentMetadata;
+        }
+
+        private async Task<DocumentMetadata> GetDocumentMetadataAsync(DocumentId documentId, string documentMetadataId)
+        {
+            // get the metadata
+            DocumentMetadata metadata = await _table.GetAsync(GetDocumentMetadataPartitionKey(documentId), documentMetadataId);
+            if (metadata == null)
+            {
+                _eventSource.OnMissingDocumentMetadataFromDocumentStore(documentId, documentMetadataId);
+                return null;
+            }
+
+            return metadata;
+        }
+
+        private static string GetRowKeyPrefixForDateTime(DateTime dateTime)
+        {
+            return (DateTime.MaxValue.Ticks - DateTime.UtcNow.Ticks).ToString("D19");
+        }
+
+        private static string GetDocumentMetadataPartitionKey(DocumentId documentId)
+        {
+            return string.Format(
+                CultureInfo.InvariantCulture,
+                "{0}-{1}",
+                documentId.Type,
+                documentId.TypeId);
         }
     }
 }

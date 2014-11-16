@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Net;
+using System.Net.Http;
 using System.Runtime.CompilerServices;
 using Knapcode.RemindMeWhen.Core.Clients;
-using Knapcode.RemindMeWhen.Core.Models;
 using Knapcode.RemindMeWhen.Core.Queue;
 using Newtonsoft.Json;
 
@@ -10,24 +11,29 @@ namespace Knapcode.RemindMeWhen.Core.Logging
 {
     public class EventSource : IEventSource
     {
-        public void OnSearchedRottenTomatoesForMovies(string query, PageOffset pageOffset, TimeSpan duration)
+        public void OnFetchedDocumentFromRottenTomatoesApi(DocumentId documentId, HttpStatusCode httpStatusCode, long length, TimeSpan duration)
         {
-            Log(new {query, pageOffset, duration});
+            Log(new {documentId, httpStatusCode, length, duration});
         }
 
-        public void OnMissingKeyValueFromAzure(string key)
+        public void OnMissingRecordFromAzure(string partitionKey, string rowKey)
         {
-            Log(new {key});
+            Log(new {partitionKey, rowKey});
         }
 
-        public void OnFetchedKeyValueFromAzure(string key, TimeSpan duration)
+        public void OnFetchedRecordFromAzure(string partitionKey, string rowKey, TimeSpan duration)
         {
-            Log(new {key, duration});
+            Log(new {partitionKey, rowKey, duration});
         }
 
-        public void OnSavedKeyValueToAzure(string key, TimeSpan duration)
+        public void OnSavedRecordToAzure(string partitionKey, string rowKey, TimeSpan duration)
         {
-            Log(new {key, duration});
+            Log(new {partitionKey, rowKey, duration});
+        }
+
+        public void OnFetchedListFromAzure(string partitionKey, int count, TimeSpan duration)
+        {
+            Log(new {partitionKey, count, duration});
         }
 
         public void OnMissingBlobFromAzure(string key)
@@ -50,9 +56,9 @@ namespace Knapcode.RemindMeWhen.Core.Logging
             Log(new {key, exists, duration});
         }
 
-        public void OnMissingDocumentMetadataFromDocumentStore(Guid documentMetadataId)
+        public void OnMissingDocumentMetadataFromDocumentStore(DocumentId documentId, string documentMetadataId)
         {
-            Log(new {documentMetadataId});
+            Log(new {documentId, documentMetadataId});
         }
 
         public void OnMissingDocumentFromDocumentStore(DocumentMetadata documentMetadata)
@@ -102,7 +108,7 @@ namespace Knapcode.RemindMeWhen.Core.Logging
 
         public void OnCompletedProcessDocumentJobDueToMissingDocument(ProcessDocumentMessage processDocumentMessage)
         {
-            Log(new { processDocumentMessage });
+            Log(new {processDocumentMessage});
         }
 
         private static void Log(object obj, [CallerMemberName] string callerMemberName = null)

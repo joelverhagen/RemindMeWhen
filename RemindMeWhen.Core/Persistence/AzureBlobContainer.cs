@@ -1,7 +1,7 @@
+using System;
 using System.IO;
 using System.Threading.Tasks;
 using Knapcode.RemindMeWhen.Core.Logging;
-using Knapcode.RemindMeWhen.Core.Support;
 using Microsoft.WindowsAzure.Storage.Blob;
 
 namespace Knapcode.RemindMeWhen.Core.Persistence
@@ -28,31 +28,35 @@ namespace Knapcode.RemindMeWhen.Core.Persistence
             }
 
             var outputStream = new MemoryStream();
-            using (EventTimer.OnCompletion(d => _eventSource.OnBlobDownloadFromAzure(key, outputStream.Length, d)))
+            TimeSpan duration = await EventTimer.TimeAsync(async () =>
             {
                 await cloudBlockBlob.DownloadToStreamAsync(outputStream);
-            }
+            });
+            _eventSource.OnBlobDownloadFromAzure(key, outputStream.Length, duration);
+
             return outputStream.ToArray();
         }
 
         public async Task SetAsync(string key, byte[] value)
         {
             CloudBlockBlob cloudBlockBlob = _blobContainer.GetBlockBlobReference(key);
-            using (EventTimer.OnCompletion(d => _eventSource.OnBlobUploadedToAzure(key, value.LongLength, d)))
+            TimeSpan duration = await EventTimer.TimeAsync(async () =>
             {
                 await cloudBlockBlob.UploadFromByteArrayAsync(value, 0, value.Length);
-            }
+            });
+            _eventSource.OnBlobUploadedToAzure(key, value.LongLength, duration);
         }
 
         public async Task<bool> ExistsAsync(string key)
         {
             CloudBlockBlob cloudBlockBlob = _blobContainer.GetBlockBlobReference(key);
-            var exists = new Reference<bool>();
-            using (EventTimer.OnCompletion(d => _eventSource.OnBlobExistenceCheckedInAzure(key, exists.Value, d)))
+            bool exists = false;
+            TimeSpan duration = await EventTimer.TimeAsync(async () =>
             {
-                exists.Value = await cloudBlockBlob.ExistsAsync();
-            }
-            return exists.Value;
+                exists = await cloudBlockBlob.ExistsAsync();
+            });
+            _eventSource.OnBlobExistenceCheckedInAzure(key, exists, duration);
+            return exists;
         }
     }
 }

@@ -19,30 +19,33 @@ namespace Knapcode.RemindMeWhen.Core.Queue
 
         public async Task<QueueMessage<T>> PeekMessageAsync()
         {
-            CloudQueueMessage cloudQueueMessage;
-            using (EventTimer.OnCompletion(d => _eventSource.OnQueueMessagePeeked(d)))
+            CloudQueueMessage cloudQueueMessage = null;
+            TimeSpan duration = await EventTimer.TimeAsync(async () =>
             {
                 cloudQueueMessage = await _cloudQueue.PeekMessageAsync();
-            }
+            });
+            _eventSource.OnQueueMessagePeeked(duration);
             return Deserialize(cloudQueueMessage);
         }
 
         public async Task<QueueMessage<T>> GetMessageAsync()
         {
-            CloudQueueMessage cloudQueueMessage;
-            using (EventTimer.OnCompletion(d => _eventSource.OnQueueMessageFetched(d)))
+            CloudQueueMessage cloudQueueMessage = null;
+            TimeSpan duration = await EventTimer.TimeAsync(async () =>
             {
                 cloudQueueMessage = await _cloudQueue.GetMessageAsync();
-            }
+            });
+            _eventSource.OnQueueMessageFetched(duration);
             return Deserialize(cloudQueueMessage);
         }
 
         public async Task DeleteMessageAsync(QueueMessage<T> queueMessage)
         {
-            using (EventTimer.OnCompletion(d => _eventSource.OnQueueMessageDeleted(d)))
+            TimeSpan duration = await EventTimer.TimeAsync(async () =>
             {
                 await _cloudQueue.DeleteMessageAsync(queueMessage.Id, queueMessage.PopReceipt);
-            }
+            });
+            _eventSource.OnQueueMessageDeleted(duration);
         }
 
         public async Task UpdateMessageAsync(QueueMessage<T> queueMessage, TimeSpan visibilityTimeout)
@@ -52,10 +55,11 @@ namespace Knapcode.RemindMeWhen.Core.Queue
             string serializedContent = Serialize(queueMessage.Content);
             cloudQueueMessage.SetMessageContent(serializedContent);
 
-            using (EventTimer.OnCompletion(d => _eventSource.OnQueueMessageUpdated(d)))
+            TimeSpan duration = await EventTimer.TimeAsync(async () =>
             {
                 await _cloudQueue.UpdateMessageAsync(cloudQueueMessage, visibilityTimeout, MessageUpdateFields.Content | MessageUpdateFields.Visibility);
-            }
+            });
+            _eventSource.OnQueueMessageUpdated(duration);
         }
 
         public async Task AddMessageAsync(T content)
@@ -64,10 +68,11 @@ namespace Knapcode.RemindMeWhen.Core.Queue
 
             var cloudQueueMessage = new CloudQueueMessage(serializedContent);
 
-            using (EventTimer.OnCompletion(d => _eventSource.OnQueueMessageAdded(d)))
+            TimeSpan duration = await EventTimer.TimeAsync(async () =>
             {
                 await _cloudQueue.AddMessageAsync(cloudQueueMessage);
-            }
+            });
+            _eventSource.OnQueueMessageAdded(duration);
         }
 
         private static string Serialize(T deserializedContent)

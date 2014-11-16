@@ -29,13 +29,10 @@ namespace Knapcode.RemindMeWhen.Core.Clients.RottenTomatoes
 
             _eventSource = eventSource;
             _key = settings.ApiKey;
-            _httpClient = new HttpClient
-            {
-                BaseAddress = new Uri("http://api.rottentomatoes.com/api/public/v1.0/")
-            };
+            _httpClient = new HttpClient();
         }
 
-        public async Task<Document> SearchMoviesAsync(string query, PageOffset pageOffset)
+        public DocumentId SearchMovies(string query, PageOffset pageOffset)
         {
             Guard.ArgumentNotNull(query, "query");
             Guard.ArgumentNotNull(pageOffset, "pageOffset");
@@ -49,26 +46,43 @@ namespace Knapcode.RemindMeWhen.Core.Clients.RottenTomatoes
 
             string requestUri = GetRequestUri("movies.json", parameters);
 
-            using (EventTimer.OnCompletion(d => _eventSource.OnSearchedRottenTomatoesForMovies(query, pageOffset, d)))
+            return new DocumentId
             {
-                HttpResponseMessage response = await _httpClient.GetAsync(requestUri);
-                return await GetExternalDocumentAsync(response);
-            }
+                Type = DocumentType.RottenTomatoesApiMovieSearch,
+                TypeId = requestUri
+            };
         }
 
-        private async Task<Document> GetExternalDocumentAsync(HttpResponseMessage response)
+        public async Task<Document> GetDocumentAsync(DocumentId documentId)
         {
+            Guard.ArgumentNotNull(documentId, "documentId");
+            return await GetExternalDocumentAsync(documentId);
+        }
+
+        private async Task<Document> GetExternalDocumentAsync(DocumentId documentId)
+        {
+            // build the request URI
+            var builder = new UriBuilder(documentId.TypeId);
+            NameValueCollection queryString = HttpUtility.ParseQueryString(builder.Query);
+            queryString["apiKey"] = _key;
+            builder.Query = queryString.ToString();
+            string requestUri = builder.ToString();
+
+            // make the HTTP request
+            HttpResponseMessage response = null;
+            byte[] content = null;
+            TimeSpan duration = await EventTimer.TimeAsync(async () =>
+            {
+                response = await _httpClient.GetAsync(requestUri);
+                content = await response.Content.ReadAsByteArrayAsync();
+            });
+            _eventSource.OnFetchedDocumentFromRottenTomatoesApi(documentId, response.StatusCode, content.LongLength, duration);
+
             response.EnsureSuccessStatusCode();
 
-            string typeId = response.RequestMessage.RequestUri.ToString().Replace(_key, "key");
-            byte[] content = await response.Content.ReadAsByteArrayAsync();
             return new Document
             {
-                Id = new DocumentId
-                {
-                    Type = DocumentType.RottenTomatoesApiMovieSearch,
-                    TypeId = typeId
-                },
+                Id = documentId,
                 Content = content
             };
         }
@@ -76,15 +90,18 @@ namespace Knapcode.RemindMeWhen.Core.Clients.RottenTomatoes
         private string GetRequestUri(string path, IEnumerable<KeyValuePair<string, string>> parameters)
         {
             NameValueCollection queryString = HttpUtility.ParseQueryString(string.Empty);
-
-            queryString["apikey"] = _key;
-
             foreach (var pair in parameters)
             {
                 queryString[pair.Key] = pair.Value;
             }
 
-            return path + "?" + queryString;
+            var builder = new UriBuilder
+            {
+                Path = "http://api.rottentomatoes.com/api/public/v1.0/" + path,
+                Query = queryString.ToString()
+            };
+
+            return builder.ToString();
         }
     }
 }

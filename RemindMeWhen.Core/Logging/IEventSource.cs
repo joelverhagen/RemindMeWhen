@@ -1,24 +1,25 @@
 ﻿using System;
+using System.Net;
 using Knapcode.RemindMeWhen.Core.Clients;
-using Knapcode.RemindMeWhen.Core.Models;
 using Knapcode.RemindMeWhen.Core.Queue;
 
 namespace Knapcode.RemindMeWhen.Core.Logging
 {
     public interface IEventSource
     {
-        void OnSearchedRottenTomatoesForMovies(string query, PageOffset pageOffset, TimeSpan duration);
+        void OnFetchedDocumentFromRottenTomatoesApi(DocumentId documentId, HttpStatusCode httpStatusCode, long length, TimeSpan duration);
 
-        void OnMissingKeyValueFromAzure(string key);
-        void OnFetchedKeyValueFromAzure(string key, TimeSpan duration);
-        void OnSavedKeyValueToAzure(string key, TimeSpan duration);
+        void OnMissingRecordFromAzure(string partitionKey, string rowKey);
+        void OnFetchedRecordFromAzure(string partitionKey, string rowKey, TimeSpan duration);
+        void OnSavedRecordToAzure(string partitionKey, string rowKey, TimeSpan duration);
+        void OnFetchedListFromAzure(string partitionKey, int count, TimeSpan duration);
 
         void OnMissingBlobFromAzure(string key);
         void OnBlobDownloadFromAzure(string key, long length, TimeSpan duration);
         void OnBlobUploadedToAzure(string key, long length, TimeSpan duration);
         void OnBlobExistenceCheckedInAzure(string key, bool exists, TimeSpan duration);
 
-        void OnMissingDocumentMetadataFromDocumentStore(Guid documentMetadataId);
+        void OnMissingDocumentMetadataFromDocumentStore(DocumentId documentId, string documentMetadataId);
         void OnMissingDocumentFromDocumentStore(DocumentMetadata documentMetadata);
         void OnDuplicateFoundInDocumentStore(DocumentId documentId, string documentHash);
         
