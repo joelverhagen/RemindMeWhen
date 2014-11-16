@@ -47,7 +47,8 @@ namespace Knapcode.RemindMeWhen.Core.Settings
                 },
                 RottenTomatoes = new RottenTomatoesSettings
                 {
-                    ApiKey = RottenTomatoes.ApiKey
+                    ApiKey = RottenTomatoes.ApiKey,
+                    DocumentCacheDuration = RottenTomatoes.DocumentCacheDuration
                 }
             };
         }

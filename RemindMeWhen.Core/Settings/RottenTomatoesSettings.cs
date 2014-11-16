@@ -1,4 +1,6 @@
-﻿namespace Knapcode.RemindMeWhen.Core.Settings
+﻿using System;
+
+namespace Knapcode.RemindMeWhen.Core.Settings
 {
     public class RottenTomatoesSettings
     {
@@ -12,5 +14,7 @@
          */
 
         public string ApiKey { get; set; }
+
+        public TimeSpan DocumentCacheDuration { get; set; }
     }
 }

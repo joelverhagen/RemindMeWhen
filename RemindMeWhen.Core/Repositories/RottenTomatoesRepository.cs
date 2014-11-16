@@ -1,10 +1,13 @@
-﻿using System.Linq;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Knapcode.RemindMeWhen.Core.Clients;
 using Knapcode.RemindMeWhen.Core.Clients.RottenTomatoes;
 using Knapcode.RemindMeWhen.Core.Models;
 using Knapcode.RemindMeWhen.Core.Persistence;
 using Knapcode.RemindMeWhen.Core.Queue;
+using Knapcode.RemindMeWhen.Core.Settings;
 
 namespace Knapcode.RemindMeWhen.Core.Repositories
 {
@@ -14,28 +17,45 @@ namespace Knapcode.RemindMeWhen.Core.Repositories
         private readonly IEventExtractor<byte[], T> _eventExtractor;
         private readonly IRottenTomatoesDocumentClient _externalDocumentClient;
         private readonly IQueue<ProcessDocumentMessage> _queue;
+        private readonly TimeSpan _documentCacheDuration;
 
-        public RottenTomatoesRepository(IRottenTomatoesDocumentClient externalDocumentClient, IDocumentStore documentStore, IQueue<ProcessDocumentMessage> queue, IEventExtractor<byte[], T> eventExtractor)
+        public RottenTomatoesRepository(IRottenTomatoesDocumentClient externalDocumentClient, IDocumentStore documentStore, IQueue<ProcessDocumentMessage> queue, IEventExtractor<byte[], T> eventExtractor, RottenTomatoesSettings settings)
         {
             _externalDocumentClient = externalDocumentClient;
             _documentStore = documentStore;
             _queue = queue;
             _eventExtractor = eventExtractor;
+            _documentCacheDuration = settings.DocumentCacheDuration;
         }
 
         public async Task<Page<T>> SearchMovieReleaseEventsAsync(string query, PageOffset pageOffset)
         {
-            // query Rotten Tomatoes API
+            // check for a recent search
             DocumentId documentId = _externalDocumentClient.SearchMovies(query, pageOffset);
-            Document document = await _externalDocumentClient.GetDocumentAsync(documentId);
+            IEnumerable<DocumentMetadata> documentMetadataList = await _documentStore.ListDocumentMetadataAsync(documentId, DateTime.UtcNow.Subtract(_documentCacheDuration));
+            DocumentMetadata[] documentMetadataArray = documentMetadataList.ToArray();
 
-            // persist the document
-            DocumentMetadata documentMetadata = await _documentStore.PersistUniqueDocumentAsync(document);
-
-            // enqueue the process queue message if the document is new
-            if (!documentMetadata.Duplicate)
+            // get the document from the cache or from the external source
+            Document document;
+            if (documentMetadataArray.Any())
             {
-                await _queue.AddMessageAsync(new ProcessDocumentMessage {DocumentMetadata = documentMetadata});
+                // get the latest document from the cache
+                DocumentMetadata documentMetadata = documentMetadataArray.OrderByDescending(m => m.Created).First();
+                document = await _documentStore.GetDocumentAsync(documentId, documentMetadata.Id);
+            }
+            else
+            {
+                // query Rotten Tomatoes API
+                document = await _externalDocumentClient.GetDocumentAsync(documentId);
+
+                // persist the document
+                DocumentMetadata documentMetadata = await _documentStore.PersistUniqueDocumentAsync(document);
+
+                // enqueue the process queue message if the document is new
+                if (!documentMetadata.Duplicate)
+                {
+                    await _queue.AddMessageAsync(new ProcessDocumentMessage { DocumentMetadata = documentMetadata });
+                }
             }
 
             // extract the events
