@@ -13,11 +13,16 @@ namespace Knapcode.RemindMeWhen.Website.Controllers
     {
         private readonly IRottenTomatoesRepository<MovieReleasedToTheaterEvent> _movieReleasedToTheaterEventRepository;
         private readonly IRottenTomatoesRepository<MovieReleasedToHomeEvent> _movieReleasedToHomeEventRepository;
+        private readonly ISubscriptionRepository _subscriptionRepository;
 
-        public HomeController(IRottenTomatoesRepository<MovieReleasedToTheaterEvent> movieReleasedToTheaterEventRepository, IRottenTomatoesRepository<MovieReleasedToHomeEvent> movieReleasedToHomeEventRepository)
+        public HomeController(
+            IRottenTomatoesRepository<MovieReleasedToTheaterEvent> movieReleasedToTheaterEventRepository,
+            IRottenTomatoesRepository<MovieReleasedToHomeEvent> movieReleasedToHomeEventRepository,
+            ISubscriptionRepository subscriptionRepository)
         {
             _movieReleasedToTheaterEventRepository = movieReleasedToTheaterEventRepository;
             _movieReleasedToHomeEventRepository = movieReleasedToHomeEventRepository;
+            _subscriptionRepository = subscriptionRepository;
         }
 
         public async Task<ActionResult> Index(string eventType = null, string query = null)
@@ -38,6 +43,13 @@ namespace Knapcode.RemindMeWhen.Website.Controllers
             }
 
             return View(viewModel);
+        }
+
+        public async Task<ActionResult> Subscribe(EventId eventId)
+        {
+            Subscription subscription = await _subscriptionRepository.SaveSubscriptionAsync(Guid.Empty, eventId);
+
+            return new JsonResult { Data = subscription };
         }
 
         private async Task<SearchResultsViewModel> GetSearchResults(string eventType, string query)

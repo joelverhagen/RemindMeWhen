@@ -40,6 +40,7 @@
                 <th>Year</th>
                 <th>Type</th>
                 <th>Date</th>
+                <th>Subscribe</th>
             </tr>
             @foreach (MovieReleasedEvent e in Model.Results.Events)
             {
@@ -62,6 +63,16 @@
                         {
                             <b>???</b>
                         }
+                    </td>
+                    <td>
+                        <form method="POST" action="@Url.Action("Subscribe")">
+                            <input type="hidden" value="@e.Id.Type" name="type"/>
+                            <input type="hidden" value="@e.Id.ProviderId" name="providerId" />
+                            <input type="hidden" value="@e.Id.ResourceId" name="resourceId" />
+                            <button type="submit" class="btn btn-default" aria-label="Subscribe">
+                                <span class="glyphicon glyphicon-bell" aria-hidden="true"></span>
+                            </button>
+                        </form>
                     </td>
                 </tr>
             }
