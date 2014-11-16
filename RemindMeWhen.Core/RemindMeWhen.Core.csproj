@@ -93,6 +93,7 @@
     <Compile Include="Clients\RottenTomatoes\RottenTomatoesEventExtractor.cs" />
     <Compile Include="Compression\GzipCompressor.cs" />
     <Compile Include="Compression\ICompressor.cs" />
+    <Compile Include="Extensions\DateTimeExtensions.cs" />
     <Compile Include="Extensions\NinjectExtensions.cs" />
     <Compile Include="Logging\EventSource.cs" />
     <Compile Include="Models\EventId.cs" />
