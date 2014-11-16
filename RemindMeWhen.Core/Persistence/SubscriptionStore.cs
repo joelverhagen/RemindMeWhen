@@ -10,7 +10,7 @@ using Knapcode.RemindMeWhen.Core.Models;
 
 namespace Knapcode.RemindMeWhen.Core.Persistence
 {
-    public class SubscriptionStore
+    public class SubscriptionStore : ISubscriptionStore
     {
         private readonly IEventSource _eventSource;
         private readonly IHashAlgorithm _hashAlgorithm;
