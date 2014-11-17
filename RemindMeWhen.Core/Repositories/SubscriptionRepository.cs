@@ -21,7 +21,7 @@ namespace Knapcode.RemindMeWhen.Core.Repositories
         {
             // enqueue
             var message = new SaveSubscriptionMessage {UserId = userId, EventId = eventId};
-            await _queue.AddMessageAsync(message);
+            await _queue.AddMessageAsync(message, TimeSpan.Zero);
 
             // persist
             return await _subscriptionStore.SaveSubscriptionAsync(userId, eventId);

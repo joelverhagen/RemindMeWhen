@@ -9,6 +9,6 @@ namespace Knapcode.RemindMeWhen.Core.Queue
         Task<QueueMessage<T>> GetMessageAsync();
         Task DeleteMessageAsync(QueueMessage<T> queueMessage);
         Task UpdateMessageAsync(QueueMessage<T> queueMessage, TimeSpan visibilityTimeout);
-        Task AddMessageAsync(T content);
+        Task<QueueMessage<T>> AddMessageAsync(T content, TimeSpan visibilityTimeout);
     }
 }

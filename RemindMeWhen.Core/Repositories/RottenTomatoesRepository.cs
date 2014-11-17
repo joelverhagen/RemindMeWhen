@@ -54,7 +54,7 @@ namespace Knapcode.RemindMeWhen.Core.Repositories
                 // enqueue the process queue message if the document is new
                 if (!documentMetadata.Duplicate)
                 {
-                    await _queue.AddMessageAsync(new ProcessDocumentMessage { DocumentMetadata = documentMetadata });
+                    await _queue.AddMessageAsync(new ProcessDocumentMessage { DocumentMetadata = documentMetadata }, TimeSpan.Zero);
                 }
             }
 

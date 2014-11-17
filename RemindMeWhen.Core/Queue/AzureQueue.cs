@@ -62,7 +62,7 @@ namespace Knapcode.RemindMeWhen.Core.Queue
             _eventSource.OnQueueMessageUpdated(duration);
         }
 
-        public async Task AddMessageAsync(T content)
+        public async Task<QueueMessage<T>>  AddMessageAsync(T content, TimeSpan visibilityTimeout)
         {
             string serializedContent = Serialize(content);
 
@@ -70,9 +70,11 @@ namespace Knapcode.RemindMeWhen.Core.Queue
 
             TimeSpan duration = await EventTimer.TimeAsync(async () =>
             {
-                await _cloudQueue.AddMessageAsync(cloudQueueMessage);
+                await _cloudQueue.AddMessageAsync(cloudQueueMessage, null, visibilityTimeout, null, null);
             });
             _eventSource.OnQueueMessageAdded(duration);
+
+            return Deserialize(cloudQueueMessage);
         }
 
         private static string Serialize(T deserializedContent)
