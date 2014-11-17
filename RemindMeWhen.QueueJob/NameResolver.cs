@@ -8,6 +8,7 @@ namespace Knapcode.RemindMeWhen.QueueJob
     public class NameResolver : INameResolver
     {
         public const string ProcessDocumentQueueNameKey = "ProcessDocumentQueueName";
+        public const string SaveSubscriptionQueueNameKey = "SaveSubscriptionQueueName";
 
         private readonly AzureStorageSettings _storageSetting;
 
@@ -22,6 +23,8 @@ namespace Knapcode.RemindMeWhen.QueueJob
             {
                 case ProcessDocumentQueueNameKey:
                     return _storageSetting.ProcessDocumentQueueName;
+                case SaveSubscriptionQueueNameKey:
+                    return _storageSetting.SaveSubscriptionQueueName;
                 default:
                     string message = string.Format(
                         CultureInfo.InvariantCulture,

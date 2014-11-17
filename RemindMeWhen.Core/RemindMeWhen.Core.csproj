@@ -110,6 +110,9 @@
     <Compile Include="Persistence\IBlobClient.cs" />
     <Compile Include="Persistence\ITable.cs" />
     <Compile Include="Persistence\ITableClient.cs" />
+    <Compile Include="Queue\SaveSubscriptionQueueJob.cs" />
+    <Compile Include="Queue\IQueueJob.cs" />
+    <Compile Include="Queue\ProcessDocumentQueueJob.cs" />
     <Compile Include="Queue\SaveSubscriptionMessage.cs" />
     <Compile Include="Queue\ProcessDocumentMessage.cs" />
     <Compile Include="Repositories\IEventSearchRepository.cs" />

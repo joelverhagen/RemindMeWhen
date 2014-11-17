@@ -5,18 +5,17 @@ using Knapcode.RemindMeWhen.Core.Clients;
 using Knapcode.RemindMeWhen.Core.Logging;
 using Knapcode.RemindMeWhen.Core.Models;
 using Knapcode.RemindMeWhen.Core.Persistence;
-using Knapcode.RemindMeWhen.Core.Queue;
 using Knapcode.RemindMeWhen.Core.Support;
 
-namespace Knapcode.RemindMeWhen.QueueJob
+namespace Knapcode.RemindMeWhen.Core.Queue
 {
-    public class ProcessDocumentJob
+    public class ProcessDocumentQueueJob : IQueueJob<ProcessDocumentMessage>
     {
         private readonly IEventSource _eventSource;
         private readonly IDocumentStore _documentStore;
         private readonly IEventExtractor<byte[], MovieReleasedEvent> _deserializer;
 
-        public ProcessDocumentJob(IEventSource eventSource, IDocumentStore documentStore, IEventExtractor<byte[], MovieReleasedEvent> deserializer)
+        public ProcessDocumentQueueJob(IEventSource eventSource, IDocumentStore documentStore, IEventExtractor<byte[], MovieReleasedEvent> deserializer)
         {
             _eventSource = eventSource;
             _documentStore = documentStore;

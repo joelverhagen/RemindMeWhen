@@ -28,6 +28,9 @@ namespace Knapcode.RemindMeWhen.QueueJob
                 NameResolver = Kernel.Get<INameResolver>()
             };
             Kernel.Bind<JobHostConfiguration>().ToConstant(jobHostConfiguration);
+
+            // QueueJobExecutor
+            QueueJobExecutor.Resolver = type => Kernel.Get(type);
         }
     }
 }
