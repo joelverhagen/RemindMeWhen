@@ -6,6 +6,6 @@ namespace Knapcode.RemindMeWhen.Core.Models
     public class Subscription
     {
         public SubscriptionId Id { get; set; }
-        public DateTime Created { get; set; }
+        public DateTimeOffset Created { get; set; }
     }
 }

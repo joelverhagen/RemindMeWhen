@@ -48,7 +48,7 @@ namespace Knapcode.RemindMeWhen.Core.Persistence
         public async Task<Subscription> SaveSubscriptionAsync(Guid userId, EventId eventId)
         {
             // create the subscription
-            DateTime created = DateTime.UtcNow;
+            DateTimeOffset created = DateTimeOffset.UtcNow;
             string uniqueId = string.Format(
                 CultureInfo.InvariantCulture,
                 "{0}-{1}",

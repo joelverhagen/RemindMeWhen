@@ -9,15 +9,15 @@ namespace Knapcode.RemindMeWhen.Core.Clients.RottenTomatoes
 {
     public class RottenTomatoesEventExtractor : IEventExtractor<byte[], MovieReleasedToTheaterEvent>, IEventExtractor<byte[], MovieReleasedToHomeEvent>, IEventExtractor<byte[], MovieReleasedEvent>
     {
-        private static readonly IDictionary<Type, Tuple<EventType, Func<ReleaseDates, DateTime?>>> EventTypeMap = new Dictionary<Type, Tuple<EventType, Func<ReleaseDates, DateTime?>>>
+        private static readonly IDictionary<Type, Tuple<EventType, Func<ReleaseDates, DateTimeOffset?>>> EventTypeMap = new Dictionary<Type, Tuple<EventType, Func<ReleaseDates, DateTimeOffset?>>>
         {
             {
                 typeof (MovieReleasedToTheaterEvent),
-                new Tuple<EventType, Func<ReleaseDates, DateTime?>>(EventType.MovieReleasedToTheater, r => r.Theater)
+                new Tuple<EventType, Func<ReleaseDates, DateTimeOffset?>>(EventType.MovieReleasedToTheater, r => r.Theater)
             },
             {
                 typeof (MovieReleasedToHomeEvent),
-                new Tuple<EventType, Func<ReleaseDates, DateTime?>>(EventType.MovieReleasedToHome, r => r.Dvd)
+                new Tuple<EventType, Func<ReleaseDates, DateTimeOffset?>>(EventType.MovieReleasedToHome, r => r.Dvd)
             }
         };
 
@@ -112,7 +112,7 @@ namespace Knapcode.RemindMeWhen.Core.Clients.RottenTomatoes
 
             // get the event date and type
             Type type = typeof (T);
-            Tuple<EventType, Func<ReleaseDates, DateTime?>> tuple;
+            Tuple<EventType, Func<ReleaseDates, DateTimeOffset?>> tuple;
             if (!EventTypeMap.TryGetValue(type, out tuple))
             {
                 string message = string.Format(
@@ -123,10 +123,10 @@ namespace Knapcode.RemindMeWhen.Core.Clients.RottenTomatoes
             }
 
             EventType eventType = tuple.Item1;
-            DateTime? dateTime = movie.ReleaseDates != null ? tuple.Item2(movie.ReleaseDates) : null;
+            DateTimeOffset? dateTime = movie.ReleaseDates != null ? tuple.Item2(movie.ReleaseDates) : null;
             var e = Activator.CreateInstance<T>();
             e.Content = content;
-            e.DateTime = dateTime;
+            e.DateTimeOffset = dateTime;
             e.Id = new EventId
             {
                 ProviderId = ProviderId.RottenTomatoesApi,

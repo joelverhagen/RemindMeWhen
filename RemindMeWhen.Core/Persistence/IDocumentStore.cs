@@ -13,7 +13,7 @@ namespace Knapcode.RemindMeWhen.Core.Persistence
         /// <param name="documentId">The document ID.</param>
         /// <param name="after">Only document metadata created after this time will be returned.</param>
         /// <returns>The list of document metadata.</returns>
-        Task<IEnumerable<DocumentMetadata>> ListDocumentMetadataAsync(DocumentId documentId, DateTime after);
+        Task<IEnumerable<DocumentMetadata>> ListDocumentMetadataAsync(DocumentId documentId, DateTimeOffset after);
 
         /// <summary>
         /// Get the document with the provided document metadata ID.

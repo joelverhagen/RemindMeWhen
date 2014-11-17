@@ -4,7 +4,7 @@ namespace Knapcode.RemindMeWhen.Core.Clients.RottenTomatoes.Models
 {
     public class ReleaseDates
     {
-        public DateTime? Dvd { get; set; }
-        public DateTime? Theater { get; set; }
+        public DateTimeOffset? Dvd { get; set; }
+        public DateTimeOffset? Theater { get; set; }
     }
 }

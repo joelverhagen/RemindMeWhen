@@ -28,7 +28,7 @@ namespace Knapcode.RemindMeWhen.Core.Persistence
             _compressor = compressor;
         }
 
-        public async Task<IEnumerable<DocumentMetadata>> ListDocumentMetadataAsync(DocumentId documentId, DateTime dateTime)
+        public async Task<IEnumerable<DocumentMetadata>> ListDocumentMetadataAsync(DocumentId documentId, DateTimeOffset dateTime)
         {
             return await _table.ListAsync(GetDocumentMetadataPartitionKey(documentId), null, dateTime.GetDescendingOrderString());
         }
@@ -75,7 +75,7 @@ namespace Knapcode.RemindMeWhen.Core.Persistence
             string documentMetadataId = string.Format(
                 CultureInfo.InvariantCulture,
                 "{0}-{1}",
-                DateTime.UtcNow.GetDescendingOrderString(),
+                DateTimeOffset.UtcNow.GetDescendingOrderString(),
                 Guid.NewGuid());
 
             var documentMetadata = new DocumentMetadata
@@ -84,7 +84,7 @@ namespace Knapcode.RemindMeWhen.Core.Persistence
                 DocumentId = document.Id,
                 Hash = documentHash,
                 Duplicate = duplicate,
-                Created = DateTime.UtcNow
+                Created = DateTimeOffset.UtcNow
             };
 
             await _table.SetAsync(GetDocumentMetadataPartitionKey(document.Id), documentMetadataId, documentMetadata);

@@ -32,7 +32,7 @@ namespace Knapcode.RemindMeWhen.Core.Repositories
         {
             // check for a recent search
             DocumentId documentId = _externalDocumentClient.SearchMovies(query, pageOffset);
-            IEnumerable<DocumentMetadata> documentMetadataList = await _documentStore.ListDocumentMetadataAsync(documentId, DateTime.UtcNow.Subtract(_documentCacheDuration));
+            IEnumerable<DocumentMetadata> documentMetadataList = await _documentStore.ListDocumentMetadataAsync(documentId, DateTimeOffset.UtcNow.Subtract(_documentCacheDuration));
             DocumentMetadata[] documentMetadataArray = documentMetadataList.ToArray();
 
             // get the document from the cache or from the external source

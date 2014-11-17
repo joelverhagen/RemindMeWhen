@@ -8,6 +8,6 @@ namespace Knapcode.RemindMeWhen.Core.Clients
         public DocumentId DocumentId { get; set; }
         public string Hash { get; set; }
         public bool Duplicate { get; set; }
-        public DateTime Created { get; set; }
+        public DateTimeOffset Created { get; set; }
     }
 }
