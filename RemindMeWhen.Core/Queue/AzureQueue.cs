@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Knapcode.KitchenSink.Support;
 using Knapcode.RemindMeWhen.Core.Logging;
 using Microsoft.WindowsAzure.Storage.Queue;
 using Newtonsoft.Json;

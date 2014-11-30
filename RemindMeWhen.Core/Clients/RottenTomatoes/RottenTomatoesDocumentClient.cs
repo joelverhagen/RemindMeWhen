@@ -5,11 +5,10 @@ using System.Globalization;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web;
+using Knapcode.KitchenSink.Support;
 using Knapcode.RemindMeWhen.Core.Logging;
 using Knapcode.RemindMeWhen.Core.Models;
 using Knapcode.RemindMeWhen.Core.Settings;
-using Knapcode.RemindMeWhen.Core.Support;
-
 namespace Knapcode.RemindMeWhen.Core.Clients.RottenTomatoes
 {
     public class RottenTomatoesDocumentClient : IRottenTomatoesDocumentClient
@@ -35,7 +34,6 @@ namespace Knapcode.RemindMeWhen.Core.Clients.RottenTomatoes
         public DocumentId SearchMovies(string query, PageOffset pageOffset)
         {
             Guard.ArgumentNotNull(query, "query");
-            Guard.ArgumentNotNull(pageOffset, "pageOffset");
 
             var parameters = new Dictionary<string, string>
             {

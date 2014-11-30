@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.IO.Compression;
+using Knapcode.KitchenSink.Support;
 using Knapcode.RemindMeWhen.Core.Logging;
 
 namespace Knapcode.RemindMeWhen.Core.Compression

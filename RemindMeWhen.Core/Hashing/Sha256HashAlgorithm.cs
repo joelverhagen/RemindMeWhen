@@ -1,5 +1,5 @@
 ﻿using System.Security.Cryptography;
-using Knapcode.RemindMeWhen.Core.Support;
+using Knapcode.KitchenSink.Support;
 
 namespace Knapcode.RemindMeWhen.Core.Hashing
 {

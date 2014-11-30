@@ -30,6 +30,12 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="ICSharpCode.SharpZipLib">
+      <HintPath>..\packages\SharpZipLib.0.86.0\lib\20\ICSharpCode.SharpZipLib.dll</HintPath>
+    </Reference>
+    <Reference Include="Knapcode.KitchenSink">
+      <HintPath>..\packages\Knapcode.KitchenSink.1.0.0\lib\net40\Knapcode.KitchenSink.dll</HintPath>
+    </Reference>
     <Reference Include="Knapcode.StandardSerializer">
       <HintPath>..\packages\Knapcode.StandardSerializer.1.0.0\lib\net40\Knapcode.StandardSerializer.dll</HintPath>
     </Reference>
@@ -121,9 +127,6 @@
     <Compile Include="Settings\AzureStorageConfiguration.cs" />
     <Compile Include="Settings\RemindMeWhenConfiguration.cs" />
     <Compile Include="Settings\RottenTomatoesConfiguration.cs" />
-    <Compile Include="Support\Guard.cs" />
-    <Compile Include="Support\Base64Url.cs" />
-    <Compile Include="Logging\EventTimer.cs" />
     <Compile Include="Logging\IEventSource.cs" />
     <Compile Include="Support\CoreModule.cs" />
     <Compile Include="Persistence\AzureBlobContainer.cs" />

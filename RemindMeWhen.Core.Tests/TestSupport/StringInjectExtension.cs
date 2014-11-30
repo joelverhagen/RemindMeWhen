@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Web.UI;
-using Knapcode.RemindMeWhen.Core.Support;
+using Knapcode.KitchenSink.Support;
 
 namespace Knapcode.RemindMeWhen.Core.Tests.TestSupport
 {
